@@ -1,0 +1,180 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="không cần seo" name="description" />
+    <meta content="name" name="Nguyễn Anh Dũng" />
+    <title>@ViewBag.Title </title>
+    <link href="~/Theme/assets/global/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Crop/css")
+    @Styles.Render("~/css/metronic/datatable")
+    @Styles.Render("~/css/metronic/Upload")
+    @RenderSection("Styles", required: false)
+    @*@Scripts.Render("~/bundles/modernizr")*@
+</head>
+<body class="page-container-bg-solid page-header-fixed page-sidebar-closed-hide-logo">
+    <div class="page-header navbar navbar-fixed-top">
+        <!-- BEGIN HEADER INNER -->
+        <div class="page-header-inner ">
+            <!-- BEGIN LOGO -->
+            <div class="page-logo">
+                <a href="/Public/CoreHome">
+                    <img src="~/Theme/adminfav.png" alt="logo" class="logo-default">
+                </a>
+                <div class="menu-toggler sidebar-toggler">
+                    <!-- DOC: Remove the above "hide" to enable the sidebar toggler button on header -->
+                </div>
+            </div>
+            <!-- END LOGO -->
+            <!-- BEGIN RESPONSIVE MENU TOGGLER -->
+            <a href="javascript:;" class="menu-toggler responsive-toggler" data-toggle="collapse" data-target=".navbar-collapse"> </a>
+            <!-- END RESPONSIVE MENU TOGGLER -->
+            <!-- BEGIN PAGE ACTIONS -->
+            <!-- DOC: Remove "hide" class to enable the page header actions -->
+            <div class="page-actions">
+                <div class="btn-group">
+                    <button type="button" class="btn red-haze btn-sm dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+                        <span class="hidden-sm hidden-xs">Menu&nbsp;</span>
+                        <i class="fa fa-angle-down"></i>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a href="/Core/CoreHome">
+                                <i class="icon-tag"></i> khoanh hình
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/Core/Images">
+                                <i class="icon-docs"></i> Cập nhật hình ảnh
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/Core/ImageCropeds">
+                                <i class="icon-tag"></i> Cập nhật hình đã khoanh
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- END PAGE ACTIONS -->
+            <!-- BEGIN PAGE TOP -->
+            <div class="page-top">
+                <!-- BEGIN HEADER SEARCH BOX -->
+                <!-- DOC: Apply "search-form-expanded" right after the "search-form" class to have half expanded search box -->
+                <form class="search-form" action="page_general_search_2.html" method="GET">
+                    <div class="input-group">
+                        <input type="text" class="form-control input-sm" placeholder="Search..." name="query">
+                        <span class="input-group-btn">
+                            <a href="javascript:;" class="btn submit">
+                                <i class="icon-magnifier"></i>
+                            </a>
+                        </span>
+                    </div>
+                </form>
+                <!-- END HEADER SEARCH BOX -->
+                <!-- BEGIN TOP NAVIGATION MENU -->
+                <div class="top-menu">
+                    <ul class="nav navbar-nav pull-right">
+                        <li class="separator hide"> </li>
+
+                        <li class="dropdown dropdown-user dropdown-light">
+                            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+                                <span class="username username-hide-on-mobile"> Nick </span>
+                                <!-- DOC: Do not remove below empty space(&nbsp;) as its purposely used -->
+
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-default">
+                                <li>
+                                    <a href="#">
+                                        <i class="icon-user"></i> My Profile
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a href="#">
+                                        <i class="icon-key"></i> Log Out
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <!-- END USER LOGIN DROPDOWN -->
+                        <!-- BEGIN QUICK SIDEBAR TOGGLER -->
+                        <li class="dropdown dropdown-extended quick-sidebar-toggler">
+                            <span class="sr-only">Toggle Quick Sidebar</span>
+                            <i class="icon-logout"></i>
+                        </li>
+                        <!-- END QUICK SIDEBAR TOGGLER -->
+                    </ul>
+                </div>
+                <!-- END TOP NAVIGATION MENU -->
+            </div>
+            <!-- END PAGE TOP -->
+        </div>
+        <!-- END HEADER INNER -->
+    </div>
+
+    <div class="page-container">
+        <div class="page-content-wrapper">
+            <!-- BEGIN CONTENT BODY -->
+            <!-- BEGIN PAGE HEAD-->
+            <div class="page-head">
+                <!-- BEGIN PAGE TITLE -->
+                <div class="page-title">
+                    <h1>
+                        Công cụ gán nhãn chữ viết tay Việt Nam kiểu viết tự nhiên
+                    </h1>
+                </div>
+                <!-- END PAGE TITLE -->
+            </div>
+            <!-- END PAGE HEAD-->
+            <!-- BEGIN PAGE BREADCRUMB -->
+            @*<ul class="page-breadcrumb breadcrumb">
+                    <li>
+                        <a href="index.html">Home</a>
+                        <i class="fa fa-circle"></i>
+                    </li>
+                    <li>
+                        <span class="active">Crop image</span>
+                    </li>
+                </ul>*@
+            @RenderBody()
+
+        </div>
+    </div>
+
+
+
+
+
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/Crop/jquery")
+    @Scripts.Render("~/toast/js")
+    @Scripts.Render("~/js/metronic/datatable")
+    @Scripts.Render("~/js/metronic/datatable-none-ajax-source")
+    @Scripts.Render("~/js/metronic/plupload")
+    @*@Scripts.Render("~/bundles/bootstrap")*@
+    <script>
+        $('.dChange').click(function (e) {
+            var x = $(this).attr("href");
+            if (confirm("chuyển trang ") == false) { return; };
+        });
+    </script>
+    @RenderSection("scripts", required: false)
+    @RenderSection("scripts2", required: false)
+    <footer>
+
+        <div class="page-footer">
+            <div class="page-footer-inner">
+                &copy; @DateTime.Now.Year ; Nguyễn Anh Dũng
+            </div>
+            <div class="scroll-to-top">
+                <i class="icon-arrow-up"></i>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
