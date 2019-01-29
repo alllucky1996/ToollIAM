@@ -27,13 +27,13 @@ namespace CropImage.Areas.Public.Controllers
         {
             var img = db.Images.FirstOrDefault();
             ViewBag.CRoute = CRoute;
-            ViewBag.Image = img.Uri == null ? "/Uploads/Images/Mau1.jpg" : img.Uri;
+            ViewBag.Image = img.Uri == null ? "/Uploads/Images/Mau1.PNG" : img.Uri;
             ViewBag.idImage = 1;
             int h;
-            string link = img.Uri == null ? "~/Uploads/Images/Mau1.jpg" : "~" + img.Uri;
+            string link = img.Uri == null ? "~/Uploads/Images/Mau1.PNG" : "~" + img.Uri;
             ViewBag.widthImage = CropHelper.WidthImage(Server.MapPath(link), out h);
             ViewBag.heightImage = h;
-            ViewBag.PreViewImage = "/TempImage/tempImages.jpg";
+            ViewBag.PreViewImage = "/TempImage/1.PNG";
             #region drop
             var listDau = db.Daus;
             ViewBag.IdDau = new SelectList(listDau, "Code", "Name");

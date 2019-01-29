@@ -25,8 +25,10 @@ namespace CropImage.Models
             loaiTu.Add(new LoaiTu() { Code = "adv", Name = "Trạng từ" });
             loaiTu.ForEach(s => context.LoaiTus.Add(s));
             context.SaveChanges();
+            var im = new List<Image>();
+            im.Add(new Image() { Name = "1", Uri = "/Uploads/Images/Mau1.jpg", TrangThai = 0 });
+            im.ForEach(s => context.Images.Add(s));
 
-            context.Images.Add(new Image() { Name = "Mau1", Uri = "/Uploads/Images/Mau1.jpg", TrangThai = 0 });
             context.SaveChanges();
             context.Khoas.Add(new Khoa() { KeyValue = "abc@2018", Description = "dũng tạo" });
         }
