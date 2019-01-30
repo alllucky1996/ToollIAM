@@ -300,7 +300,6 @@
     <Content Include="Areas\Core\Views\Shared\script.cshtml" />
     <Content Include="Areas\Core\Views\CoreHome\IndexT.cshtml" />
     <Content Include="Areas\Public\Views\web.config" />
-    <Content Include="Areas\Public\Views\CoreHome\About.cshtml" />
     <Content Include="Areas\Public\Views\CoreHome\AmTiet.cshtml" />
     <Content Include="Areas\Public\Views\CoreHome\Cau.cshtml" />
     <Content Include="Areas\Public\Views\CoreHome\Cau2.cshtml" />

@@ -6,11 +6,11 @@
     Layout = null;// "~/Views/Shared/_Layout3.cshtml";
 }
 
-@using (Html.BeginForm("CropCau", "Home", FormMethod.Post, new { @id = "formDetail", @class = "coords form-inline form-horizontal form-bordered form-row-stripped", @enctype = "multipart/form-data" , @alt="MucCau"}))
+@using (Html.BeginForm("CropCau", "Home", FormMethod.Post, new { @id = "formDetail", @class = "coords form-inline form-horizontal form-bordered form-row-stripped", @enctype = "multipart/form-data", @alt = "MucCau" }))
 {
 
     <input value="@ViewBag.idImage" type="hidden" id="idImage" name="idImage" />
-
+    <input value="1" type="hidden" id="Lever" name="Lever" />
     <table class="table table-bordered">
         <tr>
             <td>
@@ -53,9 +53,25 @@
             </td>
         </tr>
         <tr>
+            <td>
+                <label class="control-label">Dòng </label>
+            </td>
+            <td>
+                @Html.EditorFor(model => model.Line, new { @class = "form-control btn-sm lable", @style = "width: 100%;" })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="control-label">câu số </label>
+            </td>
+            <td>
+                @Html.EditorFor(model => model.Index, new { @class = "form-control btn-sm lable", @style = "width: 100%;" })
+            </td>
+        </tr>
+        <tr>
             <td>Mẫu đúng hay sai</td>
             <td>
-                <input type='checkbox' id='IsOK' name='IsOK' value='true' @(Model == null || Model.IsOK == true ? "checked=checked" : null )/>
+                <input type='checkbox' id='IsOK' name='IsOK' value='true' @(Model == null || Model.IsOK == true ? "checked=checked" : null ) />
             </td>
         </tr>
 

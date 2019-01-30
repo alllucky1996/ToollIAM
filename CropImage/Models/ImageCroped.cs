@@ -42,7 +42,7 @@ namespace CropImage.Models
         public int Line { get; set; }
         [Display(Name = "Vị trí số")]
         public int Index { get; set; }
-
+        public int Lever { get; set; }
         // chưa chạy
         [NotMapped]
         public string NameFile { get {

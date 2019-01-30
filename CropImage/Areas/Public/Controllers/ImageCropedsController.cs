@@ -58,6 +58,22 @@ namespace CropImage.Areas.Public.Controllers
             var list = await db.ImageCropeds.ToListAsync();
             foreach (var item in list)
             {
+                var rootImage = new Image<Bgr, byte>(Server.MapPath("~" + item.Image.Uri));
+                string path = Server.MapPath("~/Traning/data/"+item.Lever+"/" + item.Image.Name);
+                FileHelper.CreateFolderIfNotExist(path);
+                if (Directory.Exists(path+ "\\MoTa.txt"))
+                {
+                    string data = "được cắt từ hình: id: " + item.Image.Id + "; tên" + Path.GetFileNameWithoutExtension(item.Image.Uri) + "ở : " + Path.GetFullPath(item.Image.Uri);
+                    await FileHelper.CreateFileAsync(path, "MoTa.txt", data);
+                }
+                string nameFile = item.Image.Name + "-" + item.Line.ToString("D2") + "-" + item.Index.ToString("D2") + ".png";
+                var ok = CropHelper.Save(CropHelper.Crop(rootImage, item.X, item.Y, item.Width, item.Height), path + "\\" + nameFile);
+                if (ok)
+                {
+                    item.Uri = "/Traning/data/"+item.Lever+"/" + item.Image.Name + "/" + nameFile;
+                    db.Entry(item).State = EntityState.Modified;
+                    await db.SaveChangesAsync();
+                }
 
             }
             // Crop(Image<Bgr, byte> img, int x, int y, int width, int height);

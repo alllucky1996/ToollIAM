@@ -6,11 +6,11 @@
     Layout = null;// "~/Views/Shared/_Layout3.cshtml";
 }
 
-@using (Html.BeginForm("CropCau", "Home", FormMethod.Post, new { @id = "formDetail", @class = "coords form-inline form-horizontal form-bordered form-row-stripped", @enctype = "multipart/form-data" , @alt="MucCau"}))
+@using (Html.BeginForm("CropCau", "Home", FormMethod.Post, new { @id = "formDetail", @class = "coords form-inline form-horizontal form-bordered form-row-stripped", @enctype = "multipart/form-data", @alt = "MucCau" }))
 {
 
     <input value="@ViewBag.idImage" type="hidden" id="idImage" name="idImage" />
-
+    <input value="2" type="hidden" id="Lever" name="Lever" />
     <table class="table table-bordered">
         <tr>
             <td>
@@ -55,7 +55,7 @@
         <tr>
             <td>Mẫu đúng hay sai</td>
             <td>
-                <input type='checkbox' id='IsOK' name='IsOK' value='true' @(Model == null || Model.IsOK == true ? "checked=checked" : null )/>
+                <input type='checkbox' id='IsOK' name='IsOK' value='true' @(Model == null || Model.IsOK == true ? "checked=checked" : null ) />
             </td>
         </tr>
 

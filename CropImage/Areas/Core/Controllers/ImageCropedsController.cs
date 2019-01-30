@@ -14,6 +14,7 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using CropImage.Commons;
 using System.IO;
+using CropImage.Handler;
 
 namespace CropImage.Areas.Core.Controllers
 {
@@ -58,7 +59,15 @@ namespace CropImage.Areas.Core.Controllers
             var list = await db.ImageCropeds.ToListAsync();
             foreach (var item in list)
             {
-
+                // gọi về hình gốc 
+                string path = Server.MapPath("~/Traning/data/" + item.Image.Name + "/" + item.Lever);
+                var newUrl = await GhiFileTraining.CutImageAsync(Server.MapPath("~" + item.Image.Uri), path, item);
+                if (newUrl != "")
+                {
+                    item.Uri = "/Traning/data/" + item.Image.Name + "/" + item.Lever + "/" + newUrl;
+                    db.Entry(item).State = EntityState.Modified;
+                    await db.SaveChangesAsync();
+                }
             }
             // Crop(Image<Bgr, byte> img, int x, int y, int width, int height);
             return RedirectToAction("Index");
@@ -83,22 +92,12 @@ namespace CropImage.Areas.Core.Controllers
                 try
                 {
                     // quay về ảnh gốc lấy hình và tên
-                    var rootImage = new Image<Bgr, byte>(Server.MapPath("~" + imageCroped.Image.Uri));
-                    string path = Server.MapPath("~/Traning/data/" + imageCroped.Image.Name);
-                    FileHelper.CreateFolderIfNotExist(path);
-                    if (1 == 1)
+                   
+                    string path = Server.MapPath("~/Traning/data/" + imageCroped.Image.Name+"/"+imageCroped.Lever);
+                    var newUrl = await GhiFileTraining.CutImageAsync(Server.MapPath("~" + imageCroped.Image.Uri), path, imageCroped);
+                    if (newUrl!="")
                     {
-                        // ghi file mô tả
-                        string data = "được cắt từ hình: id: " + imageCroped.Image.Id + "; tên" + Path.GetFileNameWithoutExtension(imageCroped.Image.Uri) + "ở : " + Path.GetFullPath(imageCroped.Image.Uri);
-                        await FileHelper.CreateFileAsync(path, "MoTa.txt", data);
-                    }
-
-                    // hình mới tạo ra ghi đè luôn file đã có nếu thao tác là training lại với mỗi phần tử
-                    string nameFile = imageCroped.Image.Name + "-" + imageCroped.Line.ToString("D2") + "-" + imageCroped.Index.ToString("D2") + ".png";
-                    var ok = CropHelper.Save(CropHelper.Crop(rootImage, imageCroped.X, imageCroped.Y, imageCroped.Width, imageCroped.Height), path + "\\" + nameFile);
-                    if (ok)
-                    {
-                        imageCroped.Uri = "/Traning/data/" + imageCroped.Image.Name + "/" + nameFile;
+                        imageCroped.Uri = "/Traning/data/" + imageCroped.Image.Name + "/" + imageCroped.Lever + "/" + newUrl;
                         db.Entry(imageCroped).State = EntityState.Modified;
                         await db.SaveChangesAsync();
                     }
@@ -128,14 +127,30 @@ namespace CropImage.Areas.Core.Controllers
                     editIteam.IdDau = imageCroped.IdDau;
                 }
                 editIteam.ImageId = imageCroped.ImageId;
-                editIteam.Index = imageCroped.Index;
-                editIteam.Line = imageCroped.Line;
                 editIteam.Lable = imageCroped.Lable;
                 editIteam.IsOK = imageCroped.IsOK;
 
+                //có sửa thư tự thì cập nhật file và data
+                bool ok = false;
+                if (editIteam.Index != imageCroped.Index||editIteam.Line != imageCroped.Line)
+                {
+                    var rootImage = new Image<Bgr, byte>(Server.MapPath("~" + editIteam.Image.Uri));
+                    string path = Server.MapPath("~/Traning/data/" + editIteam.Image.Name);
+                    string nameFile = editIteam.Image.Name + "-" + editIteam.Line.ToString("D2") + "-" + editIteam.Index.ToString("D2") + ".png";
+                    ok = CropHelper.Save(CropHelper.Crop(rootImage, editIteam.X, editIteam.Y, editIteam.Width, editIteam.Height), path + "\\" + nameFile);
+                }
+                editIteam.Index = imageCroped.Index;
+                editIteam.Line = imageCroped.Line;
+
                 db.Entry(editIteam).State = EntityState.Modified;
                 await db.SaveChangesAsync();
+                
+                if(ok)
                 return RedirectToAction("Index");
+                else
+                {
+                    View(imageCroped);
+                }
             }
             ViewBag.ImageId = new SelectList(db.Images, "Id", "code", imageCroped.ImageId);
             return View(imageCroped);

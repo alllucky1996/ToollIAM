@@ -9,6 +9,7 @@
 {
     @Html.AntiForgeryToken()
     <input value="@ViewBag.idImage" type="hidden" id="idImage" , name="idImage" />
+    <input value="3" type="hidden" id="Lever" name="Lever" />
     <table class="table table-bordered">
         <tr>
             <td>
@@ -56,6 +57,22 @@
             </td>
             <td>
                 @Html.TextBoxFor(model => model.Lable, new { @class = "form-control btn-sm lable", @style = "width: 100%;" })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="control-label">Dòng </label>
+            </td>
+            <td>
+                @Html.EditorFor(model => model.Line, new { htmlAttributes = new { @class = "form-control ", @style = "width: 100%;" } })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label class="control-label">Thứ tự </label>
+            </td>
+            <td>
+                @Html.EditorFor(model => model.Index, new { htmlAttributes = new { @class = "form-control ", @style = "width: 100%;" } })
             </td>
         </tr>
         <tr>

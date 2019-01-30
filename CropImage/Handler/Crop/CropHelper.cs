@@ -54,7 +54,6 @@ namespace CropImage.Handler.Crop
         {
             try
             {
-               
                 MainImage.Save(fileName);
                 return true;
             }

@@ -175,6 +175,7 @@ namespace CropImage.Controllers
                 {
                     if (model.X == model.Y && model.Width == model.Height && model.Height == 0 && model.Y == 0) Json(new ExecuteResult() { Isok = false, Data = null, Message = "Crop k hợp lệ" });
                     var croped = new ImageCroped();
+                    
                     croped = model;
                     croped.ImageId = idImage;
                     db.ImageCropeds.Add(croped);
@@ -216,6 +217,7 @@ namespace CropImage.Controllers
                 {
                     if (model.X == model.Y && model.Width == model.Height && model.Height == 0 && model.Y == 0) Json(new ExecuteResult() { Isok = false, Data = null, Message = "Crop k hợp lệ" });
                     var croped = new ImageCroped();
+                    croped.Lever = 2;
                     croped = model;
                     croped.ImageId = idImage;
                     db.ImageCropeds.Add(croped);
@@ -266,6 +268,7 @@ namespace CropImage.Controllers
                 try
                 {
                     var croped = new ImageCroped();
+                    croped.Lever = 3;
                     croped = model;
                     croped.ImageId = idImage;
                     db.ImageCropeds.Add(croped);
@@ -299,8 +302,8 @@ namespace CropImage.Controllers
                 try
                 {
                     var croped = new ImageCroped();
+                    croped.Lever = 4;
                     croped = model;
-
                     croped.ImageId = idImage;
                     db.ImageCropeds.Add(croped);
                     await db.SaveChangesAsync();
