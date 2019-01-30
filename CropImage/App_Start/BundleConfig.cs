@@ -251,8 +251,7 @@ namespace CropImage
                 "~/Themes/assets/global/plugins/jquery-file-upload/css/jquery.fileupload-ui.css"
 
                 ));
-
-
+            
         }
     }
 }
