@@ -15,6 +15,7 @@ using Emgu.CV.Structure;
 using CropImage.Commons;
 using System.IO;
 using CropImage.Handler;
+using System.IO.Compression;
 
 namespace CropImage.Areas.Core.Controllers
 {
@@ -92,10 +93,10 @@ namespace CropImage.Areas.Core.Controllers
                 try
                 {
                     // quay về ảnh gốc lấy hình và tên
-                   
-                    string path = Server.MapPath("~/Traning/data/" + imageCroped.Image.Name+"/"+imageCroped.Lever);
+
+                    string path = Server.MapPath("~/Traning/data/" + imageCroped.Image.Name + "/" + imageCroped.Lever);
                     var newUrl = await GhiFileTraining.CutImageAsync(Server.MapPath("~" + imageCroped.Image.Uri), path, imageCroped);
-                    if (newUrl!="")
+                    if (newUrl != "")
                     {
                         imageCroped.Uri = "/Traning/data/" + imageCroped.Image.Name + "/" + imageCroped.Lever + "/" + newUrl;
                         db.Entry(imageCroped).State = EntityState.Modified;
@@ -132,7 +133,7 @@ namespace CropImage.Areas.Core.Controllers
 
                 //có sửa thư tự thì cập nhật file và data
                 bool ok = false;
-                if (editIteam.Index != imageCroped.Index||editIteam.Line != imageCroped.Line)
+                if (editIteam.Index != imageCroped.Index || editIteam.Line != imageCroped.Line)
                 {
                     var rootImage = new Image<Bgr, byte>(Server.MapPath("~" + editIteam.Image.Uri));
                     string path = Server.MapPath("~/Traning/data/" + editIteam.Image.Name);
@@ -143,13 +144,13 @@ namespace CropImage.Areas.Core.Controllers
                 editIteam.Line = imageCroped.Line;
 
                 db.Entry(editIteam).State = EntityState.Modified;
-                await db.SaveChangesAsync();
-                
-                if(ok)
-                return RedirectToAction("Index");
+                var r = await db.SaveChangesAsync();
+
+                if (r < 1)
+                    return View(imageCroped);
                 else
                 {
-                    View(imageCroped);
+                    return RedirectToAction("Index", "ImageCropeds", null);
                 }
             }
             ViewBag.ImageId = new SelectList(db.Images, "Id", "code", imageCroped.ImageId);
@@ -187,10 +188,35 @@ namespace CropImage.Areas.Core.Controllers
 
         #region ghi file WriteFile
         // ghi từ db vào file nhãn 
-        public ActionResult WriteFile(string key)
+        public ActionResult WriteFile(long? AccountId)
         {
             //format: a01-000u-00-00| ok| 154| 408 768 27 51| AT| A
-            // get key
+            return Write("abc@2018");
+        }
+        public ActionResult WriteByAllFile(long? AccountId)
+        {
+            //format: a01-000u-00-00| ok| 154| 408 768 27 51| AT| A
+            return Write("abc@2018", "all");
+        }
+        public ActionResult WriteWord()
+        {
+            return View();
+        }
+        public ActionResult ImageAll(long? AccountId)
+        {
+            string Source = Server.MapPath("~/Traning/data");
+            string auth = AccountId == null ? "1" : AccountId.Value.ToString();
+            string target = Server.MapPath("~/Traning/Temp/" + auth);
+            var r = AddZipFile(Source, target);
+            if (r != "")
+                return Json(new ExecuteResult() { Isok = true, Data = "/Traning/Temp/" + auth + "/" + r, Message = "Tạo file Thành công" });
+            // return Json(new ExecuteResult() { Isok = true, Data = File(target+"\\"+ r,"zip"), Message = "Tạo file Thành công" });
+            return Json(new ExecuteResult() { Isok = false, Data = null, Message = "Không tạo được file" });
+        }
+        #endregion
+
+        public JsonResult Write(string key, string type = "one")
+        {
             try
             {
                 //string keyEn = Commons.StringHelper.stringToSHA512(key);
@@ -208,27 +234,32 @@ namespace CropImage.Areas.Core.Controllers
                     {
                         listFileName.Add(db.Images.Find(crop.ImageId).Uri);
                         // dùng cho 1 hình
-                        string nameImage = db.Images.Find(crop.ImageId).Name;
-                        // dùng với hình đã cắt
-                        //   string nameFile = crop.Image.Name + "-" + crop.Line + "-" + crop.Index;
-                        // nhãn 
+                        string nameImage = "";
+                        if (type.Equals("one"))
+                            nameImage = db.Images.Find(crop.ImageId).Name;
+                        else
+                        {
+                            nameImage = Path.GetFileNameWithoutExtension(crop.Uri);
+                        }
                         listLable.Add(nameImage + " " + crop.Info);
                     }
 
-                    string comment = "#NGuoiTao_NguyenAnhDung" + DateTime.Now.ToString() + "#";
+                    string comment = "#" + db.Khoas.FirstOrDefault().Description + " " + DateTime.Now.ToString() + "#";
                     string temp = "/TrainingFile/";
+                    if (type.Equals("one"))
+                        temp = "/TrainingFile/Thay/";
                     string word = "word.txt";
                     string pathFile = Path.Combine(temp, word);
                     string path = Server.MapPath("~" + pathFile);
                     if (!System.IO.File.Exists(path))
                     {
-                        FileHelper.CreateFile(path, comment);
+                        FileHelper.CreateFile(Server.MapPath("~" + temp), word, comment);
                     }
                     foreach (var item in listLable)
                     {
                         FileHelper.AppenAllText(path, "\n" + item);
                     }
-                    return Json(new ExecuteResult() { Isok = true, Data = "path", Message = "Is ok" }, JsonRequestBehavior.AllowGet);
+                    return Json(new ExecuteResult() { Isok = true, Data = pathFile, Message = "Is ok" }, JsonRequestBehavior.AllowGet);
 
                 }
                 return Json(new ExecuteResult() { Isok = false, Data = null, Message = "Key k đúng hoặc k có quyền ghi file" }, JsonRequestBehavior.AllowGet);
@@ -238,8 +269,25 @@ namespace CropImage.Areas.Core.Controllers
                 return Json(new ExecuteResult() { Isok = false, Data = null, Message = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
+        #region ZipFile
+        public string AddZipFile(string source, string targetFolder)
+        {
+            try
+            {
+                // làm rỗng thư mục
+                FileHelper.CreateFolderIfNotExist(targetFolder);
+                FileHelper.DeleteFolder(targetFolder);
+                FileHelper.CreateFolderIfNotExist(targetFolder);
+                //thêm file mới vào
+                string fileName = Guid.NewGuid().ToString() + ".zip";
+                ZipFile.CreateFromDirectory(source, targetFolder + "\\" + fileName);
+                return fileName;
+            }
+            catch
+            {
+                return "";
+            }
+        }
         #endregion
-
-        
     }
 }

@@ -21,7 +21,7 @@
         <div class="page-header-inner ">
             <!-- BEGIN LOGO -->
             <div class="page-logo">
-                <a href="/Public/CoreHome">
+                <a href="/Core/ImageCropeds/WriteWord">
                     <img src="~/Theme/adminfav.png" alt="logo" class="logo-default">
                 </a>
                 <div class="menu-toggler sidebar-toggler">
@@ -157,6 +157,7 @@
         <script src="~/Theme/assets/layouts/global/scripts/quick-sidebar.min.js"></script>
         <script src="~/Theme/assets/layouts/global/scripts/quick-nav.min.js"></script>
 
+        <script src="~/Theme/assets/pages/scripts/ui-blockui.min.js"></script>
 
         <script src="~/Theme/assets/global/plugins/jcrop/js/jquery.color.js"></script>
         <script src="~/Theme/assets/global/plugins/jcrop/js/jquery.Jcrop.min.js"></script>
@@ -182,10 +183,10 @@
     @Scripts.Render("~/js/metronic/plupload")
     @*@Scripts.Render("~/bundles/bootstrap")*@
     <script>
-        $('.dChange').click(function (e) {
-            var x = $(this).attr("href");
-            if (confirm("chuyển trang ") == false) { return; };
-        });
+        //$('.dChange').click(function (e) {
+        //    var x = $(this).attr("href");
+        //    if (confirm("chuyển trang ") == false) { return; };
+        //});
     </script>
     @RenderSection("scripts", required: false)
     @RenderSection("scripts2", required: false)

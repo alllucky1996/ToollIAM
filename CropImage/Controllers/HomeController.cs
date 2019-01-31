@@ -19,7 +19,7 @@ namespace CropImage.Controllers
 
         public ActionResult Index()
         {
-            return RedirectToAction("Index", "CoreHome", new { area = "Public" });
+            return RedirectToAction("Index", "CoreHome", new { area = "Core" });
         }
 
         #region old 

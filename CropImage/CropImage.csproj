@@ -61,6 +61,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -338,6 +339,7 @@
     <Content Include="Content\Simple-Line-Icons.eot" />
     <Content Include="Content\Simple-Line-Icons.ttf" />
     <Content Include="Content\Simple-Line-Icons.woff" />
+    <Content Include="Areas\Core\Views\ImageCropeds\WriteWord.cshtml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\Customer.js" />

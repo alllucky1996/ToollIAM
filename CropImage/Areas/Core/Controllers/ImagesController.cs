@@ -29,7 +29,8 @@ namespace CropImage.Areas.Core.Controllers
         }
         public async Task<ActionResult> Table()
         {
-            return View(await db.Images.ToListAsync());
+            var model = await db.Images.ToListAsync();
+            return View(model);
         }
 
         // GET: Images/Details/5
