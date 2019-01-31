@@ -280,7 +280,7 @@ namespace CropImage.Areas.Core.Controllers
                 FileHelper.CreateFolderIfNotExist(targetFolder);
                 //thêm file mới vào
                 string fileName = Guid.NewGuid().ToString() + ".zip";
-                ZipFile.CreateFromDirectory(source, targetFolder + "\\" + fileName);
+                ZipFile.CreateFromDirectory(source, targetFolder + "\\" + fileName, CompressionLevel.Fastest,true);
                 return fileName;
             }
             catch
