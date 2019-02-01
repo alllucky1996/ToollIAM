@@ -47,9 +47,10 @@ namespace CropImage.Handler
                 if(!Directory.Exists(path+"\\Mota.txt"))
                 await FileHelper.CreateFileAsync(path, "MoTa.txt", data);
 
-
                 // hình mới tạo ra ghi đè luôn file đã có nếu thao tác là training lại với mỗi phần tử
-                string nameFile = imageCroped.Image.Name + "-" + imageCroped.Line.ToString("D2") + "-" + imageCroped.Index.ToString("D2") + ".png";
+                string kieu = string.IsNullOrEmpty(imageCroped.Image.KieuChu) ? "00kieu" : imageCroped.Image.KieuChu;
+
+                string nameFile = imageCroped.Lever+"-"+ imageCroped.Image.Name+"-"+ kieu + "-" + imageCroped.Line.ToString("D2") + "-" + imageCroped.Index.ToString("D2") + ".png";
                 var ok = CropHelper.Save(CropHelper.Crop(rootImage, imageCroped.X, imageCroped.Y, imageCroped.Width, imageCroped.Height), path + "\\" + nameFile);
                 if (ok) return nameFile;
                 return "";

@@ -14,9 +14,12 @@ namespace CropImage.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public string Uri { get; set; }
+        // sau sửa thành khóa ngoại nối đến người dùng để lấy tên ng đó vào đây
+        public string KieuChu { get; set; }
         //0: chưa crop
         //1: đang crop
         //2: đã crop
+        // dùng khóa ngoại chuyển trạng thái sau
         public int TrangThai { get; set; }
     }
    

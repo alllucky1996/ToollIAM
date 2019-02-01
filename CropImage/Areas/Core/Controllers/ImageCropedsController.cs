@@ -54,24 +54,33 @@ namespace CropImage.Areas.Core.Controllers
         // cắt file hàng loạt rồi hiển thị ra
         public async Task<ActionResult> Create()
         {
-            ViewBag.ImageId = new SelectList(db.Images, "Id", "code");
-            // return View();
-            // truy vấn croped
-            var list = await db.ImageCropeds.ToListAsync();
-            foreach (var item in list)
+            try
             {
-                // gọi về hình gốc 
-                string path = Server.MapPath("~/Traning/data/" + item.Image.Name + "/" + item.Lever);
-                var newUrl = await GhiFileTraining.CutImageAsync(Server.MapPath("~" + item.Image.Uri), path, item);
-                if (newUrl != "")
+                ViewBag.ImageId = new SelectList(db.Images, "Id", "code");
+                // return View();
+                // truy vấn croped
+                var list = await db.ImageCropeds.ToListAsync();
+                foreach (var item in list)
                 {
-                    item.Uri = "/Traning/data/" + item.Image.Name + "/" + item.Lever + "/" + newUrl;
-                    db.Entry(item).State = EntityState.Modified;
-                    await db.SaveChangesAsync();
+                    // gọi về hình gốc 
+                    string kieu = string.IsNullOrEmpty(item.Image.KieuChu) ? "00kieu" : item.Image.KieuChu;
+                    string path = Server.MapPath("~/Traning/data/" + item.Lever + "/" + item.Image.Name + "/" + kieu);
+                    var newUrl = await GhiFileTraining.CutImageAsync(Server.MapPath("~" + item.Image.Uri), path, item);
+                    if (newUrl != "")
+                    {
+                        item.Uri = "/Traning/data/" + item.Lever + "/" + item.Image.Name + "/" + kieu + "/" + newUrl;
+                        db.Entry(item).State = EntityState.Modified;
+                        await db.SaveChangesAsync();
+                    }
                 }
+                // Crop(Image<Bgr, byte> img, int x, int y, int width, int height);
+                //  return RedirectToAction("Index");
+                return Json(new ExecuteResult() { Isok = true, Data = "ok" });
             }
-            // Crop(Image<Bgr, byte> img, int x, int y, int width, int height);
-            return RedirectToAction("Index");
+            catch (Exception ex)
+            {
+                return Json(new ExecuteResult() { Isok = false, Message = ex.Message });
+            }
         }
 
         // GET: ImageCropeds/Edit/5
@@ -210,12 +219,11 @@ namespace CropImage.Areas.Core.Controllers
             var r = AddZipFile(Source, target);
             if (r != "")
                 return Json(new ExecuteResult() { Isok = true, Data = "/Traning/Temp/" + auth + "/" + r, Message = "Tạo file Thành công" });
-            // return Json(new ExecuteResult() { Isok = true, Data = File(target+"\\"+ r,"zip"), Message = "Tạo file Thành công" });
             return Json(new ExecuteResult() { Isok = false, Data = null, Message = "Không tạo được file" });
         }
         #endregion
 
-        public JsonResult Write(string key, string type = "one")
+        private JsonResult Write(string key, string type = "one")
         {
             try
             {
@@ -228,7 +236,8 @@ namespace CropImage.Areas.Core.Controllers
                     List<string> listFileName = new List<string>();
                     List<string> listLable = new List<string>();
                     // lấy list nhãn đã gán
-                    var listCroped = db.ImageCropeds.ToList();
+                    // lọc từ nào mà có 1 âm tiết thôi
+                    var listCroped = db.ImageCropeds.Where(o=>o.Lable.Split(' ').Count()==1).ToList();
                     // lấy ra tên hình ảnh
                     foreach (var crop in listCroped)
                     {

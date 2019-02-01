@@ -177,6 +177,7 @@ namespace CropImage.Controllers
                     var croped = new ImageCroped();
                     
                     croped = model;
+                    croped.Lable = model.Lable.Trim().Replace("  ", " ");
                     croped.ImageId = idImage;
                     db.ImageCropeds.Add(croped);
                     await db.SaveChangesAsync();
@@ -219,11 +220,12 @@ namespace CropImage.Controllers
                     var croped = new ImageCroped();
                     croped.Lever = 2;
                     croped = model;
+                    croped.Lable = model.Lable.Trim().Replace("  ", " ");
                     croped.ImageId = idImage;
                     db.ImageCropeds.Add(croped);
                     await db.SaveChangesAsync();
                     // cắt hình && show nếu là từ ghép 
-                    var c = model.Lable.Trim().Split(' ').Length;
+                    var c = model.Lable.Trim().Replace("  "," ").Split(' ').Length;
                     if (c > 1)
                     {
                         var img = db.Images.Find(idImage);
@@ -260,7 +262,7 @@ namespace CropImage.Controllers
             if (ModelState.IsValid)
             {
                 // nhầm mức tự động chuyển hay báo ra 
-                if (model.Lable.Split(' ').Count() > 1)
+                if (model.Lable.Replace("  ", " ").Split(' ').Count() > 1)
                 {
                     // goto Tu??0
                     return Json(new ExecuteResult() { Isok = false, Data = null, Message = "Nhầm mức " });
@@ -270,6 +272,7 @@ namespace CropImage.Controllers
                     var croped = new ImageCroped();
                     croped.Lever = 3;
                     croped = model;
+                    croped.Lable = model.Lable.Trim().Replace("  ", " ");
                     croped.ImageId = idImage;
                     db.ImageCropeds.Add(croped);
                     await db.SaveChangesAsync();
@@ -294,7 +297,7 @@ namespace CropImage.Controllers
                     var l = await db.Daus.FindAsync(model.IdDau);
                     model.Lable = l.Name;
                 }
-                if (model.Lable.Split(' ').Count() > 1)
+                if (model.Lable.Replace("  ", " ").Split(' ').Count() > 1)
                 {
                     // goto Tu??0
                     return Json(new ExecuteResult() { Isok = false, Data = null, Message = "Nhầm mức " });
@@ -304,6 +307,7 @@ namespace CropImage.Controllers
                     var croped = new ImageCroped();
                     croped.Lever = 4;
                     croped = model;
+                    croped.Lable = model.Lable.Trim().Replace("  ", " ");
                     croped.ImageId = idImage;
                     db.ImageCropeds.Add(croped);
                     await db.SaveChangesAsync();

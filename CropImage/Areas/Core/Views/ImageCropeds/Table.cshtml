@@ -13,8 +13,10 @@
                     <span class="caption-subject font-green-sharp bold ">Danh sách hình ảnh</span>
                 </div>
                 <div class="actions">
-                    @Html.ActionLink("Xuất hình ảnh đã khoanh", "WriteWord", null, new { @class = "btn btn-sm green"})
-                    @Html.ActionLink("Tạo file training", "WriteFile", null, new { @class = "btn btn-sm blue", @id = "Write" })
+                    @*@Html.ActionLink("Xuất hình ảnh đã khoanh", "Create", null, new { @class = "btn btn-sm green" })*@
+                    <a class = "btn btn-sm green"  id="ExportImage">Xuất hình ảnh đã khoanh</a>
+                    @Html.ActionLink("Tải về", "WriteWord", null, new { @class = "btn btn-sm green" })
+                    @Html.ActionLink("Tạo file training", "WriteFile", null, new { @class = "btn btn-sm blue" })
                 </div>
             </div>
             <div class="portlet-body">
