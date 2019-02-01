@@ -61,10 +61,6 @@
                                 @Html.DisplayFor(modelItem => item.TrangThai)
                             </td>
                             <td>
-                                @*@Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                                    @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })*@
-                                @*<a href="/Images/Edit/@item.Id" class="edit btn btn-xs blue"><i class="fa fa-edit"></i> Sửa</a>*@
                                 <a href="#" class="edit btn btn-xs blue"><i class="fa fa-edit"></i> Sửa</a>
                                 <a class="delete btn default btn-xs red-flamingo" href="javascript:;">
                                     <i class="fa fa-trash-o"></i> Xóa
@@ -93,7 +89,7 @@
            
             function loadPage() {
                 $.ajax({
-                    url: 'Images/Table',
+                    url: '/Core/Images/Table',
                     contentType: 'application/json',
                     dataType: 'html',
                     type: 'GET',
@@ -124,7 +120,7 @@
                     //});
                     var nRow = $(this).parents('tr')[0];
                     var $id = $(nRow).attr('data-objectid');
-                    var url = '/Images/Delete/' + $id;
+                    var url = '/Core/Images/Delete/' + $id;
                     $.ajax({
                         type: 'POST',
                         url: url,
