@@ -59,22 +59,46 @@ namespace CropImage.Areas.Core.Controllers
                 ViewBag.ImageId = new SelectList(db.Images, "Id", "code");
                 // return View();
                 // truy vấn croped
-                var list = await db.ImageCropeds.ToListAsync();
-                foreach (var item in list)
+                if (true)
                 {
-                    // gọi về hình gốc 
-                    string kieu = string.IsNullOrEmpty(item.Image.KieuChu) ? "00kieu" : item.Image.KieuChu;
-                    string path = Server.MapPath("~/Traning/data/" + item.Lever + "/" + item.Image.Name + "/" + kieu);
-                    var newUrl = await GhiFileTraining.CutImageAsync(Server.MapPath("~" + item.Image.Uri), path, item);
-                    if (newUrl != "")
+                    var list = await db.ImageCropeds.Where(o=>o.Lable.Split(' ').Count()==1).ToListAsync();
+                    foreach (var item in list)
                     {
-                        item.Uri = "/Traning/data/" + item.Lever + "/" + item.Image.Name + "/" + kieu + "/" + newUrl;
-                        db.Entry(item).State = EntityState.Modified;
-                        await db.SaveChangesAsync();
+                        // gọi về hình gốc 
+                        string kieu = string.IsNullOrEmpty(item.Image.KieuChu) ? "00kieu" : item.Image.KieuChu;
+                        string path = Server.MapPath("~/Traning/data/" + item.Lever + "/" + item.Image.Name + "/" + item.Image.Name + "-" + kieu);
+                        var newUrl = await GhiFileTraining.CutImageAsync(Server.MapPath("~" + item.Image.Uri), path, item);
+                        if (newUrl != "")
+                        {
+                            item.Uri = "/Traning/data/" + item.Lever + "/" + item.Image.Name + "/" + item.Image.Name + "-" + kieu + "/" + newUrl;
+                            // item.code = "";
+                            db.Entry(item).State = EntityState.Modified;
+                            await db.SaveChangesAsync();
+                        }
                     }
+                    // Crop(Image<Bgr, byte> img, int x, int y, int width, int height);
+                    //  return RedirectToAction("Index");
                 }
-                // Crop(Image<Bgr, byte> img, int x, int y, int width, int height);
-                //  return RedirectToAction("Index");
+                if (true)
+                {
+                    //var list = await db.ImageCropeds.ToListAsync();
+                    //foreach (var item in list)
+                    //{
+                    //    // gọi về hình gốc 
+                    //    string kieu = string.IsNullOrEmpty(item.Image.KieuChu) ? "00kieu" : item.Image.KieuChu;
+                    //    string path = Server.MapPath("~/Traning/data/" + item.Lever + "/" + item.Image.Name + "/" + item.Image.Name + "-" + kieu);
+                    //    var newUrl = await GhiFileTraining.CutImageAsync(Server.MapPath("~" + item.Image.Uri), path, item);
+                    //    if (newUrl != "")
+                    //    {
+                    //        item.Uri = "/Traning/data/" + item.Lever + "/" + item.Image.Name + "/" + item.Image.Name + "-" + kieu + "/" + newUrl;
+                    //        // item.code = "";
+                    //        db.Entry(item).State = EntityState.Modified;
+                    //        await db.SaveChangesAsync();
+                    //    }
+                    //}
+                    //// Crop(Image<Bgr, byte> img, int x, int y, int width, int height);
+                    ////  return RedirectToAction("Index");
+                }
                 return Json(new ExecuteResult() { Isok = true, Data = "ok" });
             }
             catch (Exception ex)
@@ -211,8 +235,28 @@ namespace CropImage.Areas.Core.Controllers
         {
             return View();
         }
-        public ActionResult ImageAll(long? AccountId)
+        public async Task<ActionResult> ImageAll(long? AccountId)
         {
+            // với mỗi 1 account id sẽ ghi 1 gile not backup
+            if (true)
+            {
+                // ghi lại file
+                var list = await db.ImageCropeds.Where(o => o.Lable.Split(' ').Count() == 1).ToListAsync();
+                foreach (var item in list)
+                {
+                    // gọi về hình gốc 
+                    string kieu = string.IsNullOrEmpty(item.Image.KieuChu) ? "00kieu" : item.Image.KieuChu;
+                    string path = Server.MapPath("~/Traning/data/" + item.Lever + "/" + item.Image.Name + "/" + item.Image.Name + "-" + kieu);
+                    var newUrl = await GhiFileTraining.CutImageAsync(Server.MapPath("~" + item.Image.Uri), path, item);
+                    if (newUrl != "")
+                    {
+                        item.Uri = "/Traning/data/" + item.Lever + "/" + item.Image.Name + "/" + item.Image.Name + "-" + kieu + "/" + newUrl;
+                        // item.code = "";
+                        db.Entry(item).State = EntityState.Modified;
+                        await db.SaveChangesAsync();
+                    }
+                }
+            }
             string Source = Server.MapPath("~/Traning/data");
             string auth = AccountId == null ? "1" : AccountId.Value.ToString();
             string target = Server.MapPath("~/Traning/Temp/" + auth);

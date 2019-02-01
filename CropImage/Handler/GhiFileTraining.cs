@@ -50,7 +50,8 @@ namespace CropImage.Handler
                 // hình mới tạo ra ghi đè luôn file đã có nếu thao tác là training lại với mỗi phần tử
                 string kieu = string.IsNullOrEmpty(imageCroped.Image.KieuChu) ? "00kieu" : imageCroped.Image.KieuChu;
 
-                string nameFile = imageCroped.Lever+"-"+ imageCroped.Image.Name+"-"+ kieu + "-" + imageCroped.Line.ToString("D2") + "-" + imageCroped.Index.ToString("D2") + ".png";
+                //string nameFile = imageCroped.Lever+"-"+ imageCroped.Image.Name+"-"+ kieu + "-" + imageCroped.Line.ToString("D2") + "-" + imageCroped.Index.ToString("D2") + ".png";
+                string nameFile = imageCroped.Image.Name+"-"+ kieu + "-" + imageCroped.Line.ToString("D2") + "-" + imageCroped.Index.ToString("D2") + ".png";
                 var ok = CropHelper.Save(CropHelper.Crop(rootImage, imageCroped.X, imageCroped.Y, imageCroped.Width, imageCroped.Height), path + "\\" + nameFile);
                 if (ok) return nameFile;
                 return "";
