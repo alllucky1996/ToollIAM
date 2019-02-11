@@ -16,7 +16,14 @@ namespace CropImage.Areas.Core.Controllers
 {
     public class CoreHomeController : Controller
     {
-        public string CRoute = "CoreHome";
+       // public string CRoute = "CoreHome";
+        public string CName = "Iamges";
+        public string CText = "Hình ảnh";
+        public string CRoute = "/Core/CoreHome/";
+        //public CoreHomeController()
+        //{
+        //    baseView();
+        //}
         // GET: Core/CoreHome
         private DataContext db = new DataContext();
         private string PreViewImage = "~/TempImage/";
@@ -25,6 +32,8 @@ namespace CropImage.Areas.Core.Controllers
      
         void baseView()
         {
+            ViewBag.CName = CName;
+            ViewBag.Ctext = CText;
             var img = db.Images.FirstOrDefault();
 
             ViewBag.Image = img.Uri == null ? "/Uploads/Images/Mau1.jpg" : img.Uri;
@@ -44,6 +53,8 @@ namespace CropImage.Areas.Core.Controllers
         }
         void baseView(Image img)
         {
+            ViewBag.CName = CName;
+            ViewBag.Ctext = CText;
             ViewBag.CRoute = CRoute;
             ViewBag.Image = img.Uri;
             ViewBag.idImage = img.Id;

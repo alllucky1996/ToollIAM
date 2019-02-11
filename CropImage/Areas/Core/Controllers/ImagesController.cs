@@ -20,7 +20,21 @@ namespace CropImage.Areas.Core.Controllers
         //{
         //    return Json("", JsonRequestBehavior.AllowGet);// View();
         //}
+        public string CName = "Iamges";
+        public string CText = "Hình ảnh";
+        public string CRoute = "/Core/Images/";
+        void BaseView()
+        {
+            ViewBag.CName = CName;
+            ViewBag.Ctext = CText;
+            ViewBag.CRoute = CRoute;
+        }
+        public ImagesController()
+        {
+            BaseView();
+        }
         private DataContext db = new DataContext();
+        
 
         // GET: Images
         public async Task<ActionResult> Index()

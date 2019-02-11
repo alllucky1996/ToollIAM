@@ -1,8 +1,11 @@
 ﻿@model IEnumerable<CropImage.Models.Image>
-
-@{
-    ViewBag.Title = "Index";
+@{ 
+    string CName = ViewBag.CName;
+    string CText = ViewBag.CText;
+    string CRoute = ViewBag.CRoute;
+    ViewBag.Title = CText;
     Layout = "~/Areas/Core/Views/Shared/_Layout.cshtml";
+
 }
 
 
@@ -84,12 +87,11 @@
 @section Scripts2 {
     <script src="~/Scripts/Customer.js"></script>
     <script type="text/javascript">
-     
+
         jQuery(document).ready(function () {
-           
             function loadPage() {
                 $.ajax({
-                    url: '/Core/Images/Table',
+                    url: '@(CRoute + "Table")',
                     contentType: 'application/json',
                     dataType: 'html',
                     type: 'GET',
@@ -111,16 +113,16 @@
                     if (confirm("Bạn có chắc chắn muốn xóa trạng thái bài viết này không?") == false) {
                         return;
                     }
-                    //Metronic.blockUI({
-                    //    message: 'Vui lòng đợi!',
-                    //    overlayColor: 'none',
-                    //    cenrerY: true,
-                    //    boxed: true,
-                    //    zIndex: 99999
-                    //});
+                    $.blockUI({
+                        message: 'Vui lòng đợi!',
+                        overlayColor: 'none',
+                        cenrerY: true,
+                        boxed: true,
+                        zIndex: 99999
+                    });
                     var nRow = $(this).parents('tr')[0];
                     var $id = $(nRow).attr('data-objectid');
-                    var url = '/Core/Images/Delete/' + $id;
+                    var url = '@CRoute'+'Delete/' + $id;
                     $.ajax({
                         type: 'POST',
                         url: url,
@@ -140,7 +142,7 @@
                             showNoty('Đã xảy ra lỗi khi thực hiện yêu cầu của bạn. Vui lòng kiểm tra và thử lại!<br />Lỗi: ' + errorThrown, 'error', 'center', 5000);
                         },
                         complete: function (result) {
-                            //Metronic.unblockUI();
+                            $.unblockUI();
                         }
                     });
                 });

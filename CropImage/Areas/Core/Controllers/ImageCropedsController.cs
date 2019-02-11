@@ -61,8 +61,9 @@ namespace CropImage.Areas.Core.Controllers
                 // truy vấn croped
                 if (true)
                 {
-                    var list = await db.ImageCropeds.Where(o=>o.Lable.Split(' ').Count()==1).ToListAsync();
-                    foreach (var item in list)
+                    var list = await db.ImageCropeds.Where(o=>o.Lever==2).ToListAsync();
+                    var ListOne = list.Where(o => o.Lable.Split(' ').Count() == 1);
+                    foreach (var item in ListOne)
                     {
                         // gọi về hình gốc 
                         string kieu = string.IsNullOrEmpty(item.Image.KieuChu) ? "00kieu" : item.Image.KieuChu;
@@ -221,15 +222,15 @@ namespace CropImage.Areas.Core.Controllers
 
         #region ghi file WriteFile
         // ghi từ db vào file nhãn 
-        public ActionResult WriteFile(long? AccountId)
+        public async Task<ActionResult> WriteFile(long? AccountId)
         {
             //format: a01-000u-00-00| ok| 154| 408 768 27 51| AT| A
-            return Write("abc@2018");
+            return await Write("abc@2018");
         }
-        public ActionResult WriteByAllFile(long? AccountId)
+        public async Task<ActionResult> WriteByAllFile(long? AccountId)
         {
             //format: a01-000u-00-00| ok| 154| 408 768 27 51| AT| A
-            return Write("abc@2018", "all");
+            return await Write("abc@2018", "all");
         }
         public ActionResult WriteWord()
         {
@@ -241,7 +242,8 @@ namespace CropImage.Areas.Core.Controllers
             if (true)
             {
                 // ghi lại file
-                var list = await db.ImageCropeds.Where(o => o.Lable.Split(' ').Count() == 1).ToListAsync();
+                var listAll = await db.ImageCropeds.Where(o => o.Lever == 2).ToListAsync();
+                var list = listAll.Where(o => o.Lable.Split(' ').Count() == 1);
                 foreach (var item in list)
                 {
                     // gọi về hình gốc 
@@ -267,7 +269,7 @@ namespace CropImage.Areas.Core.Controllers
         }
         #endregion
 
-        private JsonResult Write(string key, string type = "one")
+        private async Task<JsonResult> Write(string key, string type = "one")
         {
             try
             {
@@ -281,7 +283,9 @@ namespace CropImage.Areas.Core.Controllers
                     List<string> listLable = new List<string>();
                     // lấy list nhãn đã gán
                     // lọc từ nào mà có 1 âm tiết thôi
-                    var listCroped = db.ImageCropeds.Where(o=>o.Lable.Split(' ').Count()==1).ToList();
+                   // var listCroped = db.ImageCropeds.Where(o=>o.Lable.Split(' ').Count()==1).ToList();
+                    var listAll = await db.ImageCropeds.Where(o => o.Lever == 2).ToListAsync();
+                    var listCroped = listAll.Where(o => o.Lable.Split(' ').Count() == 1);
                     // lấy ra tên hình ảnh
                     foreach (var crop in listCroped)
                     {
