@@ -66,7 +66,7 @@ namespace CropImage.Areas.Core.Controllers
                     foreach (var item in ListOne)
                     {
                         // gọi về hình gốc 
-                        string kieu = string.IsNullOrEmpty(item.Image.KieuChu) ? "00kieu" : item.Image.KieuChu;
+                        string kieu = string.IsNullOrEmpty(item.Image.KieuChu) ? "000kieu" : item.Image.KieuChu;
                         string path = Server.MapPath("~/Traning/data/" + item.Lever + "/" + item.Image.Name + "/" + item.Image.Name + "-" + kieu);
                         var newUrl = await GhiFileTraining.CutImageAsync(Server.MapPath("~" + item.Image.Uri), path, item);
                         if (newUrl != "")

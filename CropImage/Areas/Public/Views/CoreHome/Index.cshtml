@@ -132,6 +132,13 @@
             getTu();
           // getCau();
             $('#Left').click(function () {
+                $.blockUI({
+                    message: 'Vui lòng đợi!',
+                    overlayColor: 'none',
+                    cenrerY: true,
+                    boxed: true,
+                    zIndex: 99999
+                });
                 // --
                 var $id = $('#demo2').attr('data-object-id');
                 var url = '/Home/Pre?id=' + $id;
@@ -149,6 +156,9 @@
                     error: function (data) {
                         alert('Đã sảy ra lỗi trong quá trình xử lý');
                     },
+                    complete: function (result) {
+                        $.unblockUI();
+                    }
                 });
             });
             $('#Right').click(function () {

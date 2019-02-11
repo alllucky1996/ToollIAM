@@ -187,6 +187,7 @@
     <Compile Include="Models\DataContext.cs" />
     <Compile Include="Models\DbInitializer.cs" />
     <Compile Include="Models\Khoa.cs" />
+    <Compile Include="Models\SysTem\Accounts.cs" />
     <Compile Include="Models\Training.cs" />
     <Compile Include="Models\ImageCroped.cs" />
     <Compile Include="Models\Image.cs" />
@@ -194,6 +195,7 @@
     <Compile Include="Models\Dau.cs" />
     <Compile Include="Models\ViewModels\CropInfo.cs" />
     <Compile Include="Models\ViewModels\ExecuteResult.cs" />
+    <Compile Include="Models\ViewModels\UserViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -2682,8 +2684,6 @@
     <Content Include="Theme\assets\pages\scripts\v,..min.js" />
     <Content Include="Theme\assets\pages\scripts\widgets.js" />
     <Content Include="Theme\assets\pages\scripts\widgets.min.js" />
-    <Content Include="Traning\data\Mau1\Mau1-00-00.png" />
-    <Content Include="Traning\data\Mau1\MoTa.txt" />
     <Content Include="Uploads\Images\Mau1.jpg" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -2921,6 +2921,7 @@
     <Folder Include="Theme\assets\pages\media\search\" />
     <Folder Include="Theme\assets\pages\media\users\" />
     <Folder Include="TrainingFile\" />
+    <Folder Include="Traning\data\Mau1\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
