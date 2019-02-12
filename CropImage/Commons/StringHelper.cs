@@ -19,7 +19,7 @@ namespace CropImage.Commons
         private static string GetStringFromHash(byte[] hash)
         {
             var s = string.Empty;
-            return hash.Aggregate(s, (current, b) => current + b.ToString("dung.ahihi"));
+            return hash.Aggregate(s, (current, b) => current + b.ToString("x3"));
         }
     }
 }

@@ -175,18 +175,24 @@
     <Compile Include="Areas\Public\Controllers\ImageCropedsController.cs" />
     <Compile Include="Areas\Public\Controllers\ImagesController.cs" />
     <Compile Include="Areas\Public\PublicAreaRegistration.cs" />
+    <Compile Include="Areas\SessionEnum.cs" />
     <Compile Include="Commons\FileHelper.cs" />
     <Compile Include="Commons\StringHelper.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Handler\Crop\CropHelper.cs" />
     <Compile Include="Handler\GhiFileTraining.cs" />
     <Compile Include="Handler\GrayLever.cs" />
+    <Compile Include="Handler\RoleHelper.cs" />
     <Compile Include="Models\DataContext.cs" />
     <Compile Include="Models\DbInitializer.cs" />
     <Compile Include="Models\Khoa.cs" />
+    <Compile Include="Models\SysTem\LogInfo.cs" />
+    <Compile Include="Models\SysTem\Log.cs" />
     <Compile Include="Models\SysTem\Accounts.cs" />
     <Compile Include="Models\Training.cs" />
     <Compile Include="Models\ImageCroped.cs" />
@@ -211,60 +217,6 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
-    <Content Include="img\ajax-loading.gif" />
-    <Content Include="img\ajax-modal-loading.gif" />
-    <Content Include="img\arrow-down.png" />
-    <Content Include="img\avatar.png" />
-    <Content Include="img\avatar1.jpg" />
-    <Content Include="img\avatar10.jpg" />
-    <Content Include="img\avatar11.jpg" />
-    <Content Include="img\avatar1_small.jpg" />
-    <Content Include="img\avatar2.jpg" />
-    <Content Include="img\avatar3.jpg" />
-    <Content Include="img\avatar3_small.jpg" />
-    <Content Include="img\avatar4.jpg" />
-    <Content Include="img\avatar5.jpg" />
-    <Content Include="img\avatar6.jpg" />
-    <Content Include="img\avatar7.jpg" />
-    <Content Include="img\avatar8.jpg" />
-    <Content Include="img\avatar9.jpg" />
-    <Content Include="img\hor-menu-red-arrow.png" />
-    <Content Include="img\icon-color-close.png" />
-    <Content Include="img\icon-color.png" />
-    <Content Include="img\icon-img-down.png" />
-    <Content Include="img\icon-img-up.png" />
-    <Content Include="img\inbox-nav-arrow-blue.png" />
-    <Content Include="img\loading-spinner-blue.gif" />
-    <Content Include="img\loading-spinner-default.gif" />
-    <Content Include="img\loading-spinner-grey.gif" />
-    <Content Include="img\loading.gif" />
-    <Content Include="img\logo-big-white.png" />
-    <Content Include="img\logo-big.png" />
-    <Content Include="img\logo-invert.png" />
-    <Content Include="img\logo.png" />
-    <Content Include="img\menu-toggler.png" />
-    <Content Include="img\photo1.jpg" />
-    <Content Include="img\photo2.jpg" />
-    <Content Include="img\photo3.jpg" />
-    <Content Include="img\remove-icon-small.png" />
-    <Content Include="img\search_icon_light.png" />
-    <Content Include="img\sidebar-menu-arrow-reverse.png" />
-    <Content Include="img\sidebar-menu-arrow-right.png" />
-    <Content Include="img\sidebar-menu-arrow.png" />
-    <Content Include="img\sidebar_arrow_icon_light.png" />
-    <Content Include="img\sidebar_arrow_icon_light_rtl.png" />
-    <Content Include="img\sidebar_inline_toggler_icon_blue.jpg" />
-    <Content Include="img\sidebar_inline_toggler_icon_darkblue.jpg" />
-    <Content Include="img\sidebar_inline_toggler_icon_default.jpg" />
-    <Content Include="img\sidebar_inline_toggler_icon_grey.jpg" />
-    <Content Include="img\sidebar_inline_toggler_icon_light.jpg" />
-    <Content Include="img\sidebar_inline_toggler_icon_light2.jpg" />
-    <Content Include="img\sidebar_toggler_icon_blue.png" />
-    <Content Include="img\sidebar_toggler_icon_darkblue.png" />
-    <Content Include="img\sidebar_toggler_icon_default.png" />
-    <Content Include="img\sidebar_toggler_icon_grey.png" />
-    <Content Include="img\sidebar_toggler_icon_light.png" />
-    <Content Include="img\sidebar_toggler_icon_light2.png" />
     <Content Include="License-LGPL.txt" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -2903,6 +2855,10 @@
     <Content Include="Views\ImageCropeds\Edit.cshtml" />
     <Content Include="Views\ImageCropeds\Index.cshtml" />
     <Content Include="Views\ImageCropeds\Table.cshtml" />
+    <Content Include="Views\Shared\_LoginLayout.cshtml" />
+    <Content Include="Views\Login\Index.cshtml" />
+    <Content Include="Views\Login\Register.cshtml" />
+    <Content Include="Views\Login\Login.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -2910,6 +2866,7 @@
     <Folder Include="Areas\Core\Views\CoreHomeOld\" />
     <Folder Include="Areas\Public\Models\" />
     <Folder Include="Areas\Public\Views\CoreHomeOld\" />
+    <Folder Include="Areas\Public\Views\Login\" />
     <Folder Include="Theme\assets\apps\img\" />
     <Folder Include="Theme\assets\global\plugins\NewFolder1\" />
     <Folder Include="Theme\assets\pages\img\avatars\" />
@@ -2922,6 +2879,7 @@
     <Folder Include="Theme\assets\pages\media\users\" />
     <Folder Include="TrainingFile\" />
     <Folder Include="Traning\data\Mau1\" />
+    <Folder Include="Views\Base\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

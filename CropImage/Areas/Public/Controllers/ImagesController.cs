@@ -10,17 +10,18 @@ using System.Web.Mvc;
 using CropImage.Models;
 using System.IO;
 using CropImage.Models.ViewModels;
+using CropImage.Controllers;
 
 namespace CropImage.Areas.Public.Controllers
 {
-    public class ImagesController : Controller
+    public class ImagesController : BaseController
     {
         //// GET: Core/Images
         //public ActionResult Index()
         //{
         //    return Json("", JsonRequestBehavior.AllowGet);// View();
         //}
-        private DataContext db = new DataContext();
+     //   private DataContext db = new DataContext();
 
         // GET: Images
         public async Task<ActionResult> Index()

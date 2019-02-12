@@ -73,7 +73,7 @@
                     data: { Accountid: accountid },
                     success: function (result) {
                         if (result.Isok == true) {
-                            showNoty(mess, 'success', 'center', 5000);
+                            showNoty(result.Message, 'success', 'center', 5000);
                             location.href = result.Data;
                         }
                         else {

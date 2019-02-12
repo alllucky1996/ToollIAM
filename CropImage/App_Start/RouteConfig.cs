@@ -23,8 +23,13 @@ namespace CropImage
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional },
-                namespaces: new[] { "Web.Controllers" }
+                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+              //  namespaces: new[] { "CropImage.Controllers" }
+            );
+            routes.MapRoute(
+                name: "Login",
+                url: "{controller}/{action}",
+                defaults: new { controller = "Login", action = "Index" }
             );
         }
     }

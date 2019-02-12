@@ -6,17 +6,22 @@ using System.Web;
 
 namespace CropImage.Models.SysTem
 {
-    public class Accounts
+    public class Account
     {
         [Key]
-        public long id { get; set; }
+        public long Id { get; set; }
         public string Code { get; set; }
         public string Email { get; set; }
         public string UserName { get; set; }
         public string FullName { get; set; }
         public string PassWord { get; set; }
         public DateTime CreateDate { get; set; }
-        public bool? IsDelete { get; set; }
+        public bool IsDelete { get; set; }
+        public Account()
+        {
+            this.CreateDate = DateTime.Now;
+            this.IsDelete = false;
+        }
     }
     
 }

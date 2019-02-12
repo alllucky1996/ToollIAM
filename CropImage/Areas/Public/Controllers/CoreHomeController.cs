@@ -1,4 +1,5 @@
 ﻿using CropImage.Commons;
+using CropImage.Controllers;
 using CropImage.Handler.Crop;
 using CropImage.Models;
 using CropImage.Models.ViewModels;
@@ -14,11 +15,11 @@ using System.Web.Mvc;
 
 namespace CropImage.Areas.Public.Controllers
 {
-    public class CoreHomeController : Controller
+    public class CoreHomeController : BaseController
     {
         public string CRoute = "";
         // GET: Core/CoreHome
-        private DataContext db = new DataContext();
+      //  private DataContext db = new DataContext();
         private string PreViewImage = "~/TempImage/";
         public int widthImage { get; set; }
         public int heightImage { get; set; }

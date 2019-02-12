@@ -167,6 +167,12 @@
                                 //location.reload();
                                 loadPage();
                             }
+                            else if (result.Isok == false && result.Data == "/Login") {
+                                showNoty('Hãy đăng nhập để có thể xuất hình ảnh', 'success', 'center', 5000);
+                                var x = $(location).attr("href");
+                                href = result.Data + "/Index?returnUrl=" + x;
+                                location.href = href;
+                            }
                             else {
                                 showNoty(result.message, 'error', 'center', 5000);
                             }

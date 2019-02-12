@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CropImage.Models.SysTem;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -31,6 +32,10 @@ namespace CropImage.Models
 
             context.SaveChanges();
             context.Khoas.Add(new Khoa() { KeyValue = "abc@2018", Description = "dũng tạo" });
+            context.Accounts.Add(new Account() { FullName="Phạm Thu Hà",UserName="HaPT",PassWord= Commons.StringHelper.stringToSHA512("123456")});
+            context.Accounts.Add(new Account() { FullName = "Nguyễn Anh Dũng", UserName = "alllucky", PassWord = Commons.StringHelper.stringToSHA512("123456") });
+            context.Logs.Add(new Log() {AccountId=0,Action="create",EntityName= "Account",NewValue="Phạm Thu Hà" });
+            context.SaveChanges();
         }
     }
 }

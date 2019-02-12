@@ -14,12 +14,13 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using CropImage.Commons;
 using System.IO;
+using CropImage.Controllers;
 
 namespace CropImage.Areas.Public.Controllers
 {
-    public class ImageCropedsController : Controller
+    public class ImageCropedsController : BaseController
     {
-        private DataContext db = new DataContext();
+       // private DataContext db = new DataContext();
 
         // GET: ImageCropeds
         public async Task<ActionResult> Index()

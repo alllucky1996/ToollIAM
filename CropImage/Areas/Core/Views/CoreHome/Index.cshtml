@@ -49,10 +49,10 @@
                                         <li>
                                             <a id="GoToCau" href="#Detail_1" data-toggle="tab"> Mức câu </a>
                                         </li>
-                                        <li  class="active">
+                                        <li >
                                             <a id="GoToTu" href="#Detail_2" data-toggle="tab"> Mức từ </a>
                                         </li>
-                                        <li>
+                                        <li class="active">
                                             <a id="GoToAmTiet" href="#Detail_3" data-toggle="tab"> Mức âm tiết </a>
                                         </li>
                                         <li>
@@ -92,7 +92,20 @@
     <script>
 
         jQuery(document).ready(function () {
-            
+            getFirst();
+            var x, y, w, h;
+            function dGet() {
+                x = $("#X").val();
+                y = $("#Y").val();
+                w = $("#Width").val();
+                h = $("#Height").val();
+            };
+            function dSet() {
+                $("#X").val(x) ;
+                $("#Y").val(y);
+                $("#Width").val(w) ;
+                $("#Height").val(h) ;
+            };
             $(':input[type="submit"]').prop('disabled', false);
             $("#subMit").click(function (e) {
                 e.preventDefault();
@@ -129,9 +142,15 @@
                     }
                 });
             });
-
-            getTu();
+           // getTu();
             $('#Left').click(function () {
+                $.blockUI({
+                    message: 'Vui lòng đợi!',
+                    overlayColor: 'none',
+                    cenrerY: true,
+                    boxed: true,
+                    zIndex: 99999
+                });
                 // --
                 var $id = $('#demo2').attr('data-object-id');
                 var url = '/Home/Pre?id=' + $id;
@@ -149,9 +168,19 @@
                     error: function (data) {
                         alert('Đã sảy ra lỗi trong quá trình xử lý');
                     },
+                    complete: function (result) {
+                        $.unblockUI();
+                    }
                 });
             });
             $('#Right').click(function () {
+                $.blockUI({
+                    message: 'Vui lòng đợi!',
+                    overlayColor: 'none',
+                    cenrerY: true,
+                    boxed: true,
+                    zIndex: 99999
+                });
                 // ++
                 var $id = $('#demo2').attr('data-object-id');
                 var url = '/Home/Next?id=' + $id;
@@ -169,43 +198,33 @@
                     error: function (data) {
                         alert('Đã sảy ra lỗi trong quá trình xử lý');
                     },
+                    complete: function (result) {
+                        $.unblockUI();
+                    }
                 });
             });
             $('#GoToCau').click(function () {
                 getCau();
             });
             function getCau() {
-                $.ajax({
-                    type: 'GET',
-                    url: '/Home/Cau',
-                    success: function (msg) {
-                        $("#tabCau").html(msg);
-                        var idimg = $('#demo2').attr("data-object-id");
-                        $('#idImage').val(idimg);
-                    },
-                    error: function (data) {
-                        alert('Đã sảy ra lỗi trong quá trình xử lý');
-                    },
-                });
+                Get('/Home/Cau');
+                //$.ajax({
+                //    type: 'GET',
+                //    url: '/Home/Cau',
+                //    success: function (msg) {
+                //        $("#tabCau").html(msg);
+                //        var idimg = $('#demo2').attr("data-object-id");
+                //        $('#idImage').val(idimg);
+                //    },
+                //    error: function (data) {
+                //        alert('Đã sảy ra lỗi trong quá trình xử lý');
+                //    },
+                //});
             };
             $('#GoToTu').click(function () {
-                getTu();
+                Get('/Home/Tu');
             });
-            function getTu() {
-                $.ajax({
-                    type: 'GET',
-                    url: '/Home/Tu',
-                    success: function (msg) {
-                        $("#tabCau").html(msg);
-                        var idimg = $('#demo2').attr("data-object-id");
-                        $('#idImage').val(idimg);
-                    },
-                    error: function (data) {
-                        alert('Đã sảy ra lỗi trong quá trình xử lý');
-                    },
-                });
-            };
-            $('#GoToAmTiet').click(function () {
+            function getFirst() {
                 $.ajax({
                     type: 'GET',
                     url: '/Home/AmTiet',
@@ -218,20 +237,12 @@
                         alert('Đã sảy ra lỗi trong quá trình xử lý');
                     },
                 });
+            };
+            $('#GoToAmTiet').click(function () {
+                Get('/Home/AmTiet');
             });
             $('#GoToChu').click(function () {
-                $.ajax({
-                    type: 'GET',
-                    url: '/Home/Chu',
-                    success: function (msg) {
-                        $("#tabCau").html(msg);
-                        var idimg = $('#demo2').attr("data-object-id");
-                        $('#idImage').val(idimg);
-                    },
-                    error: function (data) {
-                        alert('Đã sảy ra lỗi trong quá trình xử lý');
-                    },
-                });
+                Get('/Home/Chu');
             });
 
             function changeD() {
@@ -244,6 +255,34 @@
                         $("#dNhanChu").attr("class", "");
                     }
                 }); 
+            };
+            function Get(url) {
+                $.blockUI({
+                    message: 'Vui lòng đợi!',
+                    overlayColor: 'none',
+                    cenrerY: true,
+                    boxed: true,
+                    zIndex: 99999
+                });
+                dGet();
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    success: function (msg) {
+                       
+                        $("#tabCau").html(msg);
+                        var idimg = $('#demo2').attr("data-object-id");
+                        $('#idImage').val(idimg);
+                       
+                    },
+                    error: function (data) {
+                        alert('Đã sảy ra lỗi trong quá trình xử lý');
+                    },
+                    complete: function (result) {
+                        dSet();
+                        $.unblockUI();
+                    }
+                });
             }
         });
     </script>

@@ -1,6 +1,7 @@
 ﻿using CropImage.Commons;
 using CropImage.Handler.Crop;
 using CropImage.Models;
+using CropImage.Models.SysTem;
 using CropImage.Models.ViewModels;
 using Emgu.CV;
 using Emgu.CV.Structure;
@@ -14,9 +15,29 @@ using System.Web.Mvc;
 
 namespace CropImage.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
+        private LogHelper<ImageCroped> _log;
 
+        public HomeController()
+        {
+            _log = new LogHelper<ImageCroped>(db);
+        }
+
+        private async Task<int> CreateLogAsync(string value)
+        {
+            //var _log = new Log();
+
+            //_log.EntityName = "ImageCroped";
+            //_log.Action = "Create";
+            //_log.AccountId = accountId;
+            //_log.NewValue = value;
+            //_log.Descript = "Thêm mới" + _log.EntityName;
+            //db.Logs.Add(_log);
+            //var result= await db.SaveChangesAsync();
+            //return result;
+             return await _log.CreateAsync(accountId, value);
+        }
         public ActionResult Index()
         {
             return RedirectToAction("Index", "CoreHome", new { area = "Core" });
@@ -24,7 +45,7 @@ namespace CropImage.Controllers
 
         #region old 
 
-        private DataContext db = new DataContext();
+     //   private DataContext db = new DataContext();
         private string PreViewImage = "~/TempImage/";
         public int widthImage { get; set; }
         public int heightImage { get; set; }
@@ -181,6 +202,8 @@ namespace CropImage.Controllers
                     croped.ImageId = idImage;
                     db.ImageCropeds.Add(croped);
                     await db.SaveChangesAsync();
+                    await CreateLogAsync(croped.ToString());
+                    
                     // cắt hình && show
                     var img = db.Images.Find(idImage);
                     if (img != null)
@@ -224,6 +247,9 @@ namespace CropImage.Controllers
                     croped.ImageId = idImage;
                     db.ImageCropeds.Add(croped);
                     await db.SaveChangesAsync();
+                     await CreateLogAsync(croped.ToString());
+                   
+                    //
                     // cắt hình && show nếu là từ ghép 
                     var c = model.Lable.Trim().Replace("  "," ").Split(' ').Length;
                     if (c > 1)
@@ -276,6 +302,7 @@ namespace CropImage.Controllers
                     croped.ImageId = idImage;
                     db.ImageCropeds.Add(croped);
                     await db.SaveChangesAsync();
+                    await CreateLogAsync(croped.ToString());
                     return Json(new ExecuteResult() { Isok = true, Data = 1, Message = "Saved" });
                 }
                 catch (Exception ex)
@@ -311,6 +338,7 @@ namespace CropImage.Controllers
                     croped.ImageId = idImage;
                     db.ImageCropeds.Add(croped);
                     await db.SaveChangesAsync();
+                    await CreateLogAsync(croped.ToString());
                     return Json(new ExecuteResult() { Isok = true, Data = 1, Message = "Saved" });
                 }
                 catch (Exception ex)

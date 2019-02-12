@@ -10,16 +10,28 @@ using System.Web.Mvc;
 using CropImage.Models;
 using System.IO;
 using CropImage.Models.ViewModels;
+using CropImage.Controllers;
+using CropImage.Models.SysTem;
 
 namespace CropImage.Areas.Core.Controllers
 {
-    public class ImagesController : Controller
+    public class ImagesController : BaseController
     {
         //// GET: Core/Images
         //public ActionResult Index()
         //{
         //    return Json("", JsonRequestBehavior.AllowGet);// View();
         //}
+
+        private LogHelper<Image> _log;
+
+      
+        private async Task<int> CreateLogAsync(string value, string Mota=null)
+        {
+            var ac = Session[SessionEnum.AccountId] == null ? accountId : Session[SessionEnum.AccountId];
+
+            return await _log.CreateAsync((long)ac, value, Mota);
+        }
         public string CName = "Iamges";
         public string CText = "Hình ảnh";
         public string CRoute = "/Core/Images/";
@@ -32,8 +44,9 @@ namespace CropImage.Areas.Core.Controllers
         public ImagesController()
         {
             BaseView();
+            _log = new LogHelper<Image>(db);
         }
-        private DataContext db = new DataContext();
+       // private DataContext db = new DataContext();
         
 
         // GET: Images
@@ -65,6 +78,11 @@ namespace CropImage.Areas.Core.Controllers
         // GET: Images/Create
         public ActionResult Create()
         {
+            var acID = Session[SessionEnum.AccountId];
+            if (acID == null)
+            {
+                return Redirect("/Login/Index?returnUrl=/Core/Images/Create");
+            }
             return View();
         }
 
@@ -73,8 +91,15 @@ namespace CropImage.Areas.Core.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(HttpPostedFileBase[] fileS)
+        public async Task<ActionResult> Create(HttpPostedFileBase[] fileS, string KieuChu)
         {
+            var acID = Session[SessionEnum.AccountId];
+            if (acID == null)
+            {
+                return Redirect("/Login/Index?returnUrl=/Core/Images/Create");
+            }
+
+            KieuChu = string.IsNullOrEmpty(KieuChu) ? "000Kieu" : KieuChu;
             var i = Request.Files;
             foreach (var file in fileS)
             {
@@ -90,6 +115,7 @@ namespace CropImage.Areas.Core.Controllers
                     {
                         Guid idImage = Guid.NewGuid();
                         string fileName = string.Format("{0}{1}", idImage.ToString().Replace("-", ""), ".png");
+
                         /*string fileName = string.Format("{0}{1}", idImage.ToString().Replace("-", ""), Path.GetExtension(file.FileName));*/
 
                         var path = Path.Combine(filePath, fileName);
@@ -102,9 +128,11 @@ namespace CropImage.Areas.Core.Controllers
                         item.Description = file.FileName;
                         item.TrangThai = 0;
                         item.Uri = fullFilePath;
+                        item.KieuChu = KieuChu;
 
                         db.Images.Add(item);
                         await db.SaveChangesAsync();
+                        await CreateLogAsync(item.ToString(), acID+ " Đã ghi kèm file: fullFilePath");
 
                         return Json(new ExecuteResult() { Isok = true });
                     }

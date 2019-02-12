@@ -13,7 +13,8 @@ namespace CropImage.Models
         public long Id { get; set; }
         public string KeyValue { get; set; }
         public string Description { get; set; }
-
+       // để tạm vì chưa check quyền
+        public long? accountId { get; set; }
     }
    
 }

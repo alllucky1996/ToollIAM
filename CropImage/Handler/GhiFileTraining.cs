@@ -35,7 +35,7 @@ namespace CropImage.Handler
             return false;
         }
         // nhè ra fileName thôi
-        public static async Task<string> CutImageAsync(string ImageRoot, string path, ImageCroped imageCroped, string comment = null)
+        public static async Task<string> CutImageAsync(string ImageRoot, string path, ImageCroped imageCroped,string fileNameTarget,string comment = null)
         {
             try
             {
@@ -48,11 +48,15 @@ namespace CropImage.Handler
                 await FileHelper.CreateFileAsync(path, "MoTa.txt", data);
 
                 // hình mới tạo ra ghi đè luôn file đã có nếu thao tác là training lại với mỗi phần tử
-                string kieu = string.IsNullOrEmpty(imageCroped.Image.KieuChu) ? "00kieu" : imageCroped.Image.KieuChu;
+                //string kieu = string.IsNullOrEmpty(imageCroped.Image.KieuChu) ? "00kieu" : imageCroped.Image.KieuChu;
 
                 //string nameFile = imageCroped.Lever+"-"+ imageCroped.Image.Name+"-"+ kieu + "-" + imageCroped.Line.ToString("D2") + "-" + imageCroped.Index.ToString("D2") + ".png";
-                string nameFile = imageCroped.Image.Name+"-"+ kieu + "-" + imageCroped.Line.ToString("D2") + "-" + imageCroped.Index.ToString("D2") + ".png";
-                var ok = CropHelper.Save(CropHelper.Crop(rootImage, imageCroped.X, imageCroped.Y, imageCroped.Width, imageCroped.Height), path + "\\" + nameFile);
+                //string nameFile = imageCroped.Image.Name+"-"+ kieu + "-" + imageCroped.Line.ToString("D2") + "-" + imageCroped.Index.ToString("D2") + ".png";
+                string nameFile = fileNameTarget + "-" + imageCroped.Line.ToString("D2") + "-" + imageCroped.Index.ToString("D2") + ".png";
+                bool ok = false;
+                await Task.Run(() => {
+                    ok = CropHelper.Save(CropHelper.Crop(rootImage, imageCroped.X, imageCroped.Y, imageCroped.Width, imageCroped.Height), path + "\\" + nameFile);
+                });
                 if (ok) return nameFile;
                 return "";
             }

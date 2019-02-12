@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CropImage.Models.SysTem;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
@@ -19,6 +20,8 @@ namespace CropImage.Models
         public DbSet<ImageCroped> ImageCropeds { get; set; }
         public DbSet<Training> Trainings { get; set; }
         public DbSet<Khoa> Khoas { get; set; }
+        public DbSet<Account> Accounts { get; set; }
+        public DbSet<Log> Logs { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
            // modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
