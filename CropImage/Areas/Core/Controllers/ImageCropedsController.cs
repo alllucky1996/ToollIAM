@@ -195,22 +195,26 @@ namespace CropImage.Areas.Core.Controllers
                     //string path = Server.MapPath("~/Traning/data/" + editIteam.Image.Name);
                     //string nameFile = editIteam.Image.Name + "-" + editIteam.Line.ToString("D2") + "-" + editIteam.Index.ToString("D2") + ".png";
                     //ok = CropHelper.Save(CropHelper.Crop(rootImage, editIteam.X, editIteam.Y, editIteam.Width, editIteam.Height), path + "\\" + nameFile);
+                    // gọi về hình gốc 
                     string kieu = string.IsNullOrEmpty(editIteam.Image.KieuChu) ? "000kieu" : editIteam.Image.KieuChu;
                     string nameTemplate = editIteam.Lever + "/" + acID + "/" + acID + "-" + kieu;
                     string path = Server.MapPath("~/Traning/data/" + nameTemplate);
                     var newUrl = await GhiFileTraining.CutImageAsync(Server.MapPath("~" + editIteam.Image.Uri), path, editIteam, acID + "-" + kieu);
+                    if (newUrl != "")
+                    {
+                        editIteam.Uri = "/Traning/data/" + editIteam.Lever + "/" + acID + "/" + acID + "-" + kieu + "/" + newUrl;
+                    }
                 }
                 editIteam.Index = imageCroped.Index;
                 editIteam.Line = imageCroped.Line;
 
                 db.Entry(editIteam).State = EntityState.Modified;
                 var r = await db.SaveChangesAsync();
-
                 if (r < 1)
                     return View(imageCroped);
                 else
                 {
-                    return RedirectToAction("Index", "ImageCropeds", null);
+                    return Redirect("/Core/ImageCropeds/Index");
                 }
             }
             ViewBag.ImageId = new SelectList(db.Images, "Id", "code", imageCroped.ImageId);

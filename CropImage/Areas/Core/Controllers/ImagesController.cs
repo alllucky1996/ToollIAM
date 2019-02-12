@@ -12,6 +12,7 @@ using System.IO;
 using CropImage.Models.ViewModels;
 using CropImage.Controllers;
 using CropImage.Models.SysTem;
+using CropImage.Commons;
 
 namespace CropImage.Areas.Core.Controllers
 {
@@ -25,8 +26,8 @@ namespace CropImage.Areas.Core.Controllers
 
         private LogHelper<Image> _log;
 
-      
-        private async Task<int> CreateLogAsync(string value, string Mota=null)
+
+        private async Task<int> CreateLogAsync(string value, string Mota = null)
         {
             var ac = Session[SessionEnum.AccountId] == null ? accountId : Session[SessionEnum.AccountId];
 
@@ -46,8 +47,8 @@ namespace CropImage.Areas.Core.Controllers
             BaseView();
             _log = new LogHelper<Image>(db);
         }
-       // private DataContext db = new DataContext();
-        
+        // private DataContext db = new DataContext();
+
 
         // GET: Images
         public async Task<ActionResult> Index()
@@ -132,7 +133,7 @@ namespace CropImage.Areas.Core.Controllers
 
                         db.Images.Add(item);
                         await db.SaveChangesAsync();
-                        await CreateLogAsync(item.ToString(), acID+ " Đã ghi kèm file: fullFilePath");
+                        await CreateLogAsync(item.ToString(), acID + " Đã ghi kèm file: fullFilePath");
 
                         return Json(new ExecuteResult() { Isok = true });
                     }
@@ -159,8 +160,6 @@ namespace CropImage.Areas.Core.Controllers
         }
 
         // POST: Images/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit([Bind(Include = "Id,code,Name,Description,Uri,TrangThai")] Image image)
@@ -181,6 +180,8 @@ namespace CropImage.Areas.Core.Controllers
         // GET: Images/Delete/5
         public async Task<ActionResult> Delete(long? id)
         {
+            var acId = Session[SessionEnum.AccountId];
+            if (acId == null) return Json(new ExecuteResult() { Isok = true, Message = "Không thực hiện được thao tác", Data = null });
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -192,13 +193,16 @@ namespace CropImage.Areas.Core.Controllers
             }
             try
             {
+               
                 db.Images.Remove(image);
-
-                await db.SaveChangesAsync();
+                var result = await db.SaveChangesAsync();
                 // remove file sau
-
-                //return RedirectToAction("Index");
-                return Json(new ExecuteResult() { Isok = true, Data = image.Name });
+                await FileHelper.DeleteFileAsync(image.Uri);
+                if (result > 0)
+                {
+                    return Json(new ExecuteResult() { Isok = true, Data = image.Name });
+                }
+                return Json(new ExecuteResult() { Isok = true, Message = "Không thực hiện được thao tác", Data = null });
             }
             catch (Exception ex)
             {
@@ -207,6 +211,40 @@ namespace CropImage.Areas.Core.Controllers
         }
 
 
-       
+        public async Task<ActionResult> DeleteRef(long? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Image image = await db.Images.FindAsync(id);
+            if (image == null)
+            {
+                return HttpNotFound();
+            }
+            try
+            {
+                var acId = Session[SessionEnum.AccountId];
+                if(acId== null) return Json(new ExecuteResult() { Isok = true, Message = "Không thực hiện được thao tác", Data = null });
+                var listCroped = await db.ImageCropeds.Where(o => o.ImageId == id).ToListAsync();
+                foreach (var item in listCroped)
+                {
+                    db.ImageCropeds.Remove(item);
+                }
+                db.Images.Remove(image);
+                var result = await db.SaveChangesAsync();
+                // remove file sau
+                await FileHelper.DeleteFileAsync(image.Uri);
+                if (result > 0)
+                {
+                    return Json(new ExecuteResult() { Isok = true, Data = image.Name });
+                }
+                return Json(new ExecuteResult() { Isok = true, Message = "Không thực hiện được thao tác", Data = null });
+            }
+            catch (Exception ex)
+            {
+                return Json(new ExecuteResult() { Isok = true, Message = ex.Message, Data = null });
+            }
+        }
     }
 }

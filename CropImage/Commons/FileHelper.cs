@@ -93,6 +93,21 @@ namespace CropImage.Commons
             }
             return false;
         }
+        public static async Task<bool> DeleteFileAsync(string fileName)
+        {
+            
+            try
+            {
+                await Task.Run(() => System.IO.File.Delete(fileName));
+                return true;
+            }
+            catch 
+            {
+                return false;
+                
+            }
+            
+        }
         public static void CreateFile(string filePath, string text)
         {
             using (StreamWriter sw = (File.Exists(filePath)) ? File.CreateText(filePath) : File.CreateText(filePath))
