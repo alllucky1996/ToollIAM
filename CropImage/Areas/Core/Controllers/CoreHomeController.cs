@@ -21,6 +21,7 @@ namespace CropImage.Areas.Core.Controllers
         public string CName = "Iamges";
         public string CText = "Hình ảnh";
         public string CRoute = "/Core/CoreHome/";
+        bool FirstTime = true;
         //public CoreHomeController()
         //{
         //    baseView();
@@ -35,16 +36,33 @@ namespace CropImage.Areas.Core.Controllers
         {
             ViewBag.CName = CName;
             ViewBag.Ctext = CText;
-            var img = db.Images.FirstOrDefault();
-
-            ViewBag.Image = img.Uri == null ? "/Uploads/Images/Mau1.jpg" : img.Uri;
-            ViewBag.idImage = 1;
-            ViewBag.CRoute = CRoute;
-            int h;
-            string link = img.Uri == null ? "~/Uploads/Images/Mau1.jpg" : "~" + img.Uri;
-            ViewBag.widthImage = CropHelper.WidthImage(Server.MapPath(link), out h);
-            ViewBag.heightImage = h;
-            ViewBag.PreViewImage = "/TempImage/tempImages.jpg";
+            // lấy ra theo người up
+            var img = db.Images.Where(o=>o.AccountId == accountId && o.MaTrangThai == 1).FirstOrDefault();
+            
+           if(img == null)
+            {
+                FirstTime = true;
+                ViewBag.Image = img.Uri == null ? "/Uploads/Images/No-image-found.jpg" : img.Uri;
+                ViewBag.idImage = -1;
+                ViewBag.CRoute = CRoute;
+                int h;
+                string link = img.Uri == null ? "~/Uploads/Images/No-image-found.jpg" : "~" + img.Uri;
+                ViewBag.widthImage = CropHelper.WidthImage(Server.MapPath(link), out h);
+                ViewBag.heightImage = h;
+                ViewBag.PreViewImage = "/Uploads/Images/No-image-found.jpg";
+            }
+            else
+            {
+                FirstTime = false;
+                ViewBag.Image = img.Uri;//== null ? "/Uploads/Images/Mau1.jpg" : img.Uri;
+                ViewBag.idImage = img.Id;
+                ViewBag.CRoute = CRoute;
+                int h;
+                string link = img.Uri == null ? "~/Uploads/Images/No-image-found.jpg" : "~" + img.Uri;
+                ViewBag.widthImage = CropHelper.WidthImage(Server.MapPath(link), out h);
+                ViewBag.heightImage = h;
+                ViewBag.PreViewImage = "/TempImage/tempImages.jpg";
+            }
             #region drop
             var listDau = db.Daus;
             ViewBag.IdDau = new SelectList(listDau, "Code", "Name");
@@ -72,9 +90,10 @@ namespace CropImage.Areas.Core.Controllers
 
         public ActionResult Index()
         {
-            //if (name == "Ha")
-            //{
-                baseView();
+            if (accountId == -1) return Redirect(GoToLogIn(Request.Url.AbsolutePath));  
+            int x = db.Images.Where(o => o.AccountId == accountId && o.MaTrangThai ==1).Count();
+            if (x<1) return Redirect("/Core/Images/Create");
+            baseView();
 
                 return View();
             //}

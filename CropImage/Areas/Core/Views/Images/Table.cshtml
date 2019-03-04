@@ -23,7 +23,8 @@
                             @Html.DisplayNameFor(model => model.code)
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.Name)
+                            @*@Html.DisplayNameFor(model => model.Name)*@
+                            <span>Kiểu chữ</span>
                         </th>
                         <th>
                             @Html.DisplayNameFor(model => model.Description)
@@ -44,7 +45,7 @@
                                 @Html.DisplayFor(modelItem => item.code)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Name)
+                                @Html.DisplayFor(modelItem => item.KieuChu)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Description)
@@ -53,10 +54,10 @@
                                 <img src="@Html.DisplayFor(modelItem => item.Uri)" width="100" />
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.TrangThai)
+                                @Html.DisplayFor(modelItem => item.TrangThai.Name)
                             </td>
                             <td>
-                                <a href="/Images/Edit/@item.Id" class="edit btn btn-xs blue"><i class="fa fa-edit"></i> Sửa</a>
+                                <a href="/Core/Images/Edit/@item.Id" class="edit btn btn-xs blue"><i class="fa fa-edit"></i> Sửa</a>
 
                                 <a class="delete btn default btn-xs red-flamingo" href="javascript:;">
                                     <i class="fa fa-trash-o"></i> Xóa

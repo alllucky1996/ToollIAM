@@ -21,5 +21,6 @@ namespace CropImage.Commons
             var s = string.Empty;
             return hash.Aggregate(s, (current, b) => current + b.ToString("x3"));
         }
+
     }
 }

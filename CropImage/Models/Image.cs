@@ -1,6 +1,8 @@
-﻿using System;
+﻿using CropImage.Models.SysTem;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -20,7 +22,17 @@ namespace CropImage.Models
         //1: đang crop
         //2: đã crop
         // dùng khóa ngoại chuyển trạng thái sau
-        public int TrangThai { get; set; }
+        public int MaTrangThai { get; set; }
+        [ForeignKey("MaTrangThai")]
+        public virtual TrangThai TrangThai { get; set; }
+        public long AccountId { get; set; }
+        [ForeignKey("AccountId")]
+        public virtual Account Accounts { get; set; }
+        public Image()
+        {
+            MaTrangThai = 0;
+        }
+        public virtual ICollection<ImageCroped> ListCroped { get; set; }
     }
    
 }

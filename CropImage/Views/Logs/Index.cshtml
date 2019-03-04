@@ -1,0 +1,94 @@
+﻿@model IEnumerable<CropImage.Models.SysTem.Log>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Lịch sử toàn bộ hệ thống</h2>
+
+@*<p>
+       <a class="btn btn-default" href="@Url.Action("Index", "CoreHome")"> quay lại trang chủ</a>
+    </p>
+    <table class="table">*@
+<div class="row" id="mainContent">
+    <div class="col-md-12">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="caption">
+                    <i class="fa fa-flag-o font-green-sharp bold"></i>
+                    <span class="caption-subject font-green-sharp bold ">Danh sách hình ảnh</span>
+                </div>
+                <div class="actions">
+                    @Html.ActionLink("Thêm mới hình ảnh", "Create", null, new { @class = "btn btn-sm green" })
+                </div>
+            </div>
+            <div class="portlet-body">
+                <table class="table table-striped table-hover table-bordered" id="datatable_none_ajax_source">
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.AccountId)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.EntityName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Action)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.OldValue)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.NewValue)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.TimeOccur)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Descript)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.CreateDate)
+                        </th>
+                        <th></th>
+                    </tr>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.AccountId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.EntityName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Action)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.OldValue)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.NewValue)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TimeOccur)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Descript)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CreateDate)
+                            </td>
+                            <td>
+                                @Html.ActionLink("Chi tiết", "Details", new { id = item.Id })
+                                @*@Html.ActionLink("Delete", "Delete", new { id=item.Id })*@
+                            </td>
+                        </tr>
+                    }
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -11,7 +11,7 @@
 }
 @using (Html.BeginForm("Login", "Login", FormMethod.Post, new { @class = "login-form" }))
 {
-    @Html.AntiForgeryToken()
+  //  @Html.AntiForgeryToken()
     @Html.Hidden("returnUrl", url);
     <h3 class="form-title">Đăng nhập hệ thống</h3>
     <div class="alert alert-danger @(ViewBag.Error == null || ViewBag.Error == "" ? "display-hide" : "")">

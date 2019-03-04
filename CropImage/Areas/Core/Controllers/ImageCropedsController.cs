@@ -18,28 +18,51 @@ using CropImage.Handler;
 using System.IO.Compression;
 using CropImage.Controllers;
 using CropImage.Models.SysTem;
+using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace CropImage.Areas.Core.Controllers
 {
     public class ImageCropedsController : BaseController
     {
-       // private DataContext db = new DataContext();
-
-        // GET: ImageCropeds
-        public async Task<ActionResult> Index()
+        // private DataContext db = new DataContext();
+        #region log helper
+        private LogHelper<ImageCroped> _log;
+        private async Task<int> CreateLogAsync(string value, string Mota = null)
         {
-            var imageCropeds = db.ImageCropeds.Include(i => i.Image);
-            return View(await imageCropeds.ToListAsync());
+            //    var ac = Session[SessionEnum.AccountId] == null ? 0 : Session[SessionEnum.AccountId];
+            return await _log.CreateAsync(accountId, value, Mota);
+        }
+        private async Task<int> CreateLogAsync(ImageCroped model, string action, string mota = null)
+        {
+            string value = JsonConvert.SerializeObject(model);
+            return await _log.CreateAsync(accountId, value, action, mota);
+        }
+        #endregion
+        public ImageCropedsController()
+        {
+            _log = new LogHelper<ImageCroped>(db);
+        }
+        #region index
+        // GET: ImageCropeds
+        public ActionResult Index()
+        {
+            if (accountId == -1) return Redirect(GoToLogIn(Request.Url.AbsolutePath));
+            return View();
         }
         public async Task<ActionResult> Table()
         {
-            var imageCropeds = db.ImageCropeds.Include(i => i.Image);
-            return View(await imageCropeds.ToListAsync());
+            //if (accountId == -1) return Redirect("/Login/Index");
+            if (accountId == -1) return Redirect(GoToLogIn(Request.Url.AbsolutePath));
+            var imageCropeds = await db.ImageCropeds.Where(o => o.Image.AccountId == accountId).Include(o => o.Image).ToListAsync();
+            return View(imageCropeds);
         }
 
+        #endregion
         // GET: ImageCropeds/Details/5
         public async Task<ActionResult> Details(long? id)
         {
+            if (accountId == -1) return Redirect(GoToLogIn(Request.Url.AbsolutePath));
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -53,14 +76,17 @@ namespace CropImage.Areas.Core.Controllers
         }
 
         // GET: ImageCropeds/Create
-        // cắt file hàng loạt rồi hiển thị ra
+        #region cắt ảnh hàng loạt
+        // cắt file hàng loạt rồi hiển thị ra tại trang index
         public async Task<ActionResult> Create()
         {
-            var acID = Session[SessionEnum.AccountId];
-            if (acID == null)
-            {
-                return Json(new ExecuteResult() { Isok = false, Data = "/Login" });
-            }
+            string Error = "";
+            //var acID = accountId;// Session[SessionEnum.AccountId];
+            //if (accountId ==-1)
+            //{
+            //    return Json(new ExecuteResult() { Isok = false, Data = "/Login" });
+            //}
+            if (accountId == -1) return Redirect("/Login/Index");
             try
             {
                 ViewBag.ImageId = new SelectList(db.Images, "Id", "code");
@@ -68,25 +94,42 @@ namespace CropImage.Areas.Core.Controllers
                 // truy vấn croped
                 if (true)
                 {
-                    var listAll = await db.ImageCropeds.Where(o =>  o.Lever == 3).ToListAsync();
+                    // xóa thư mục cũ : leve 3
+                    string pathByAccount = Server.MapPath("~/Traning/data/" + 3 + "/" + accountId);
+                    if (FileHelper.DeleteFolder(pathByAccount))
+                    {
+                        Debug.WriteLine("xóa thư mục thành công");
+                    }
+                    Debug.WriteLine("Không xóa được thư mục, tạo thư mục và ghi vào ");
+
+                    var listAll = await db.ImageCropeds.Where(o => o.Lever == 3 && o.Image.AccountId == accountId).ToListAsync();
                     var list = listAll.Where(o => o.Lable.Split(' ').Count() == 1);
                     foreach (var item in list)
                     {
+                        string erW = "", erS = "";
                         // gọi về hình gốc 
                         string kieu = string.IsNullOrEmpty(item.Image.KieuChu) ? "000kieu" : item.Image.KieuChu;
-                        string nameTemplate = item.Lever + "/" + acID + "/" + acID + "-" + kieu;
+                        string nameTemplate = item.Lever + "/" + accountId + "/" + accountId + "-" + kieu;
                         string path = Server.MapPath("~/Traning/data/" + nameTemplate);
-                        var newUrl = await GhiFileTraining.CutImageAsync(Server.MapPath("~" + item.Image.Uri), path, item, acID + "-" + kieu);
-                        if (newUrl != "")
+                        //var newUrl = await GhiFileTraining.CutImageAsync(Server.MapPath("~" + item.Image.Uri), path, item, acID + "-" + kieu);
+
+                        var newUrl = await GhiFileTraining.CutImage(Server.MapPath("~" + item.Image.Uri), path, item, accountId + "-" + kieu);
+                        if (!newUrl.Contains("[ERROR]"))
                         {
-                            item.Uri = "/Traning/data/" + item.Lever + "/" + acID + "/" + acID + "-" + kieu + "/" + newUrl;
+                            item.Uri = "/Traning/data/" + item.Lever + "/" + accountId + "/" + accountId + "-" + kieu + "/" + newUrl;
                             // item.code = "";
                             db.Entry(item).State = EntityState.Modified;
-                            await db.SaveChangesAsync();
+                            var result = await db.SaveChangesAsync();
+                            if (result < 1)
+                            {
+                                erS = " Không sửa được dữ liệu, ";
+                            }
                         }
+                        else
+                            Error += item.Id + erS + newUrl + ";";
                     }
-                    // Crop(Image<Bgr, byte> img, int x, int y, int width, int height);
-                    //  return RedirectToAction("Index");
+                    if (Error != "")
+                        return Json(new ExecuteResult() { Isok = false, Message = Error });
                 }
                 if (true)
                 {
@@ -108,6 +151,8 @@ namespace CropImage.Areas.Core.Controllers
                     //// Crop(Image<Bgr, byte> img, int x, int y, int width, int height);
                     ////  return RedirectToAction("Index");
                 }
+                Log logExportImage = new Log();
+                var x = await logExportImage.CreateAsync(accountId, new Log() { Action = "ExporstFile", EntityName = "Orther", Descript = "Đã xuất tất cả các file ảnh đã khoanh" });
                 return Json(new ExecuteResult() { Isok = true, Data = "ok" });
             }
             catch (Exception ex)
@@ -115,66 +160,85 @@ namespace CropImage.Areas.Core.Controllers
                 return Json(new ExecuteResult() { Isok = false, Message = ex.Message });
             }
         }
+        #endregion
 
         // GET: ImageCropeds/Edit/5
         public async Task<ActionResult> Edit(long? id)
         {
-            var acID = Session[SessionEnum.AccountId];
-            if (acID == null)
-            {
-                return Redirect("/Login");
-            }
-
+            if (accountId == -1) return Redirect(GoToLogIn(Request.Url.AbsolutePath));
             string er = "";
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ImageCroped imageCroped = await db.ImageCropeds.FindAsync(id);
-            if (imageCroped == null)
+            ImageCroped item = await db.ImageCropeds.FindAsync(id);
+            if (item == null)
             {
                 return HttpNotFound();
             }
             //nếu chưa có link ảnh thì cắt hình
-            if (imageCroped.Uri == null)
-            {
-                try
-                {
-                    // quay về ảnh gốc lấy hình và tên
 
-                    //string path = Server.MapPath("~/Traning/data/" + imageCroped.Image.Name + "/" + imageCroped.Lever);
-                    //var newUrl = await GhiFileTraining.CutImageAsync(Server.MapPath("~" + imageCroped.Image.Uri), path, imageCroped);
-                    string kieu = string.IsNullOrEmpty(imageCroped.Image.KieuChu) ? "000kieu" : imageCroped.Image.KieuChu;
-                    string nameTemplate = imageCroped.Lever + "/" + acID + "/" + acID + "-" + kieu;
-                    string path = Server.MapPath("~/Traning/data/" + nameTemplate);
-                    var newUrl = await GhiFileTraining.CutImageAsync(Server.MapPath("~" + imageCroped.Image.Uri), path, imageCroped, acID + "-" + kieu);
-                    if (newUrl != "")
-                    {
-                        imageCroped.Uri = "/Traning/data/" + nameTemplate + newUrl;
-                        db.Entry(imageCroped).State = EntityState.Modified;
-                        await db.SaveChangesAsync();
-                    }
-                }
-                catch (Exception ex)
+            //try
+            //{
+            //    // quay về ảnh gốc lấy hình và tên
+
+            //    //string path = Server.MapPath("~/Traning/data/" + imageCroped.Image.Name + "/" + imageCroped.Lever);
+            //    //var newUrl = await GhiFileTraining.CutImageAsync(Server.MapPath("~" + imageCroped.Image.Uri), path, imageCroped);
+            //    string kieu = string.IsNullOrEmpty(imageCroped.Image.KieuChu) ? "000kieu" : imageCroped.Image.KieuChu;
+            //    string nameTemplate = imageCroped.Lever + "/" + acID + "/" + acID + "-" + kieu;
+            //    string path = Server.MapPath("~/Traning/data/" + nameTemplate);
+            //    var newUrl = await GhiFileTraining.CutImage(Server.MapPath("~" + imageCroped.Image.Uri), path, imageCroped, acID + "-" + kieu);
+            //    if (!newUrl.Contains("[ERROR]"))
+            //    {
+            //        imageCroped.Uri = "/Traning/data/" + nameTemplate + newUrl;
+            //        db.Entry(imageCroped).State = EntityState.Modified;
+            //        await db.SaveChangesAsync();
+
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    er = ex.Message;
+            //}
+            string Error = "";
+
+            string erW = "", erS = "";
+            // gọi về hình gốc 
+            string kieu = string.IsNullOrEmpty(item.Image.KieuChu) ? "000kieu" : item.Image.KieuChu;
+            string nameTemplate = item.Lever + "/" + accountId + "/" + accountId + "-" + kieu;
+            string path = Server.MapPath("~/Traning/data/" + nameTemplate);
+            //var newUrl = await GhiFileTraining.CutImageAsync(Server.MapPath("~" + item.Image.Uri), path, item, acID + "-" + kieu);
+
+            var newUrl = await GhiFileTraining.CutImage(Server.MapPath("~" + item.Image.Uri), path, item, accountId + "-" + kieu);
+            if (!newUrl.Contains("[ERROR]"))
+            {
+                item.Uri = "/Traning/data/" + item.Lever + "/" + accountId + "/" + accountId + "-" + kieu + "/" + newUrl;
+                // item.code = "";
+                db.Entry(item).State = EntityState.Modified;
+                var result = await db.SaveChangesAsync();
+                if (result < 1)
                 {
-                    er = ex.Message;
+                    erS = " Không sửa được dữ liệu, ";
                 }
             }
+            else
+                Error += item.Id + erS + newUrl + ";";
+
             ViewBag.Error = er;
-            ViewBag.ImageId = new SelectList(db.Images, "Id", "Name", imageCroped.ImageId);
-            return View(imageCroped);
+            ViewBag.ImageId = new SelectList(db.Images, "Id", "Name", item.ImageId);
+            return View(item);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(ImageCroped imageCroped)
         {
-            var acID = Session[SessionEnum.AccountId];
-            if (acID == null)
-            {
-                return Redirect("/Login");
-            }
-
+            //var acID = accountId;// Session[SessionEnum.AccountId];
+            //if (acID == -1)
+            //{
+            //    return Redirect("/Login");
+            //}
+            if (accountId == -1) return Redirect("/Login/Index");
             if (ModelState.IsValid)
             {
                 var editIteam = await db.ImageCropeds.FindAsync(imageCroped.Id);
@@ -197,12 +261,12 @@ namespace CropImage.Areas.Core.Controllers
                     //ok = CropHelper.Save(CropHelper.Crop(rootImage, editIteam.X, editIteam.Y, editIteam.Width, editIteam.Height), path + "\\" + nameFile);
                     // gọi về hình gốc 
                     string kieu = string.IsNullOrEmpty(editIteam.Image.KieuChu) ? "000kieu" : editIteam.Image.KieuChu;
-                    string nameTemplate = editIteam.Lever + "/" + acID + "/" + acID + "-" + kieu;
+                    string nameTemplate = editIteam.Lever + "/" + accountId + "/" + accountId + "-" + kieu;
                     string path = Server.MapPath("~/Traning/data/" + nameTemplate);
-                    var newUrl = await GhiFileTraining.CutImageAsync(Server.MapPath("~" + editIteam.Image.Uri), path, editIteam, acID + "-" + kieu);
-                    if (newUrl != "")
+                    var newUrl = await GhiFileTraining.CutImage(Server.MapPath("~" + editIteam.Image.Uri), path, editIteam, accountId + "-" + kieu);
+                    if (!newUrl.Contains("[ERROR]"))
                     {
-                        editIteam.Uri = "/Traning/data/" + editIteam.Lever + "/" + acID + "/" + acID + "-" + kieu + "/" + newUrl;
+                        editIteam.Uri = "/Traning/data/" + editIteam.Lever + "/" + accountId + "/" + accountId + "-" + kieu + "/" + newUrl;
                     }
                 }
                 editIteam.Index = imageCroped.Index;
@@ -224,6 +288,7 @@ namespace CropImage.Areas.Core.Controllers
         // GET: ImageCropeds/Delete/5
         public async Task<ActionResult> Delete(long? id)
         {
+            if (accountId == -1) return Redirect("/Login/Index");
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -251,6 +316,7 @@ namespace CropImage.Areas.Core.Controllers
 
 
         #region ghi file WriteFile
+        #endregion
         // ghi từ db vào file nhãn 
         public async Task<ActionResult> WriteFile(long? AccountId)
         {
@@ -259,74 +325,88 @@ namespace CropImage.Areas.Core.Controllers
             if (account.UserName == "HaPT")
             {
                 Session.Clear();
-                return await Write("abc@2018", "all",account);
-            }
-            Session.Clear();
-            return await Write("abc@2018","one", account);
-        }
-        public async Task<ActionResult> WriteByAllFile(long? AccountId)
-        {// khống chế người ghi chỉ có hà ghi :)
-            var account = await db.Accounts.FindAsync(Session[SessionEnum.AccountId]);
-            if(account!= null)
-            {
-                Session.Clear();
                 return await Write("abc@2018", "all", account);
             }
-            return Json(new ExecuteResult() { Isok = false, Data = null, Message="Bạn không có quyền cho chức năng này" });
+            Session.Clear();
+            return await Write("abc@2018", "one", account);
         }
+        public async Task<ActionResult> WriteByAllFile(long? AccountId)
+        {
+            if (accountId == -1) return Redirect(GoToLogIn(Request.Url.AbsolutePath));
+            //   if (accountId == -1) return Redirect("/Login/Index"); 
+            if (accountId != -1)
+            {
+                var account = await db.Accounts.FindAsync(accountId);
+                Session.Clear();
+                await CreateLogAsync("Đã tạo file training");
+                return await Write("abc@2018", "all", account);
+            }
+            return Json(new ExecuteResult() { Isok = false, Data = null, Message = "Bạn không có quyền sử dụng chức năng này" });
+        }
+        // view exporst
+        #region export
         public ActionResult WriteWord()
         {
-            var id = Session[SessionEnum.AccountId];
-            if (id== null)
-            {
-               return Redirect("/Login");
-            }
+            if (accountId == -1) return Redirect(GoToLogIn(Request.Url.AbsolutePath));
             return View();
         }
+        #endregion
         public async Task<ActionResult> ImageAll(long? AccountId)
         {
-            var acID = Session[SessionEnum.AccountId];
-            if (acID == null)
-            {
-                return Redirect("/Login");
-            }
-
+            if (accountId == -1) return Redirect(GoToLogIn(Request.Url.AbsolutePath));
+            string Error = "";
             // với mỗi 1 account id sẽ ghi 1 gile not backup
             if (true)
             {
-                // ghi lại file
-                var listAll = await db.ImageCropeds.Where(o => o.Lever == 2||o.Lever==3).ToListAsync();
+                // xóa thư mục cũ : leve 3
+                string pathByAccount = Server.MapPath("~/Traning/data/" + 3 + "/" + accountId);
+                if (FileHelper.DeleteFolder(pathByAccount))
+                {
+                    Debug.WriteLine("xóa thư mục thành công");
+                }
+                Debug.WriteLine("Không xóa được thư mục, tạo thư mục và ghi vào ");
+                var listAll = await db.ImageCropeds.Where(o => o.Lever == 3 && o.Image.AccountId == accountId).ToListAsync();
                 var list = listAll.Where(o => o.Lable.Split(' ').Count() == 1);
                 foreach (var item in list)
                 {
+                    string erW = "", erS = "";
                     // gọi về hình gốc 
-                    ////string kieu = string.IsNullOrEmpty(item.Image.KieuChu) ? "000kieu" : item.Image.KieuChu;
-                    ////string path = Server.MapPath("~/Traning/data/" + item.Lever + "/" + item.Image.Name + "/" + item.Image.Name + "-" + kieu);
-                    //string kieu = string.IsNullOrEmpty(item.Image.KieuChu) ? "000kieu" : item.Image.KieuChu;
-                    //string path = Server.MapPath("~/Traning/data/" + item.Lever + "/" + acID + "/" + acID + "-" + kieu);
-                    //var newUrl = await GhiFileTraining.CutImageAsync(Server.MapPath("~" + item.Image.Uri), path, item);
                     string kieu = string.IsNullOrEmpty(item.Image.KieuChu) ? "000kieu" : item.Image.KieuChu;
-                    string nameTemplate = item.Lever + "/" + acID + "/" + acID + "-" + kieu;
+                    string nameTemplate = item.Lever + "/" + accountId + "/" + accountId + "-" + kieu;
                     string path = Server.MapPath("~/Traning/data/" + nameTemplate);
-                    var newUrl = await GhiFileTraining.CutImageAsync(Server.MapPath("~" + item.Image.Uri), path, item, acID + "-" + kieu);
-                    if (newUrl != "")
+                    //var newUrl = await GhiFileTraining.CutImageAsync(Server.MapPath("~" + item.Image.Uri), path, item, acID + "-" + kieu);
+
+                    var newUrl = await GhiFileTraining.CutImage(Server.MapPath("~" + item.Image.Uri), path, item, accountId + "-" + kieu);
+                    if (!newUrl.Contains("[ERROR]"))
                     {
-                        item.Uri = "/Traning/data/" + item.Lever + "/" + acID + "/" + acID + "-" + kieu + "/" + newUrl;
+                        item.Uri = "/Traning/data/" + item.Lever + "/" + accountId + "/" + accountId + "-" + kieu + "/" + newUrl;
                         // item.code = "";
                         db.Entry(item).State = EntityState.Modified;
-                        await db.SaveChangesAsync();
+                        var result = await db.SaveChangesAsync();
+                        if (result < 1)
+                        {
+                            erS = " Không sửa được dữ liệu, ";
+                        }
                     }
+                    else
+                        Error += item.Id + erS + newUrl + ";";
                 }
+                if (Error != "")
+                    return Json(new ExecuteResult() { Isok = false, Message = Error });
             }
             string Source = Server.MapPath("~/Traning/data");
-            string auth = acID.ToString() ;// AccountId == null ? "1" : AccountId.Value.ToString();
+            string auth = accountId.ToString();// AccountId == null ? "1" : AccountId.Value.ToString();
             string target = Server.MapPath("~/Traning/Temp/" + auth);
             var r = AddZipFile(Source, target);
+            await CreateLogAsync("Đã xuất tất cả ảnh đã cắt: " + r);
             if (r != "")
+            {
+                await CreateLogAsync("Đã tải tập dữ liệu training: ");
                 return Json(new ExecuteResult() { Isok = true, Data = "/Traning/Temp/" + auth + "/" + r, Message = "Tạo file Thành công" });
+            }
             return Json(new ExecuteResult() { Isok = false, Data = null, Message = "Không tạo được file" });
         }
-        #endregion
+
 
         private async Task<JsonResult> Write(string key, string type, Account authencation)
         {
@@ -337,15 +417,15 @@ namespace CropImage.Areas.Core.Controllers
                 //var dbKey = db.Khoas.FirstOrDefault().KeyValue;
                 //dbKey = string.IsNullOrEmpty(dbKey) == true ? "ẹc" : dbKey;
                 //if (key == dbKey)
-                if(true)
+                if (true)
                 {
 
                     List<string> listFileName = new List<string>();
                     List<string> listLable = new List<string>();
                     // lấy list nhãn đã gán
                     // lọc từ nào mà có 1 âm tiết thôi
-                   // var listCroped = db.ImageCropeds.Where(o=>o.Lable.Split(' ').Count()==1).ToList();
-                    var listAll = await db.ImageCropeds.Where(o => o.Lever == 2||o.Lever==3).ToListAsync();
+                    // var listCroped = db.ImageCropeds.Where(o=>o.Lable.Split(' ').Count()==1).ToList();
+                    var listAll = await db.ImageCropeds.Where(o => o.Lever == 2 || o.Lever == 3).ToListAsync();
                     var listCroped = listAll.Where(o => o.Lable.Split(' ').Count() == 1);
                     // lấy ra tên hình ảnh
                     foreach (var crop in listCroped)
@@ -362,11 +442,11 @@ namespace CropImage.Areas.Core.Controllers
                         listLable.Add(nameImage + " " + crop.Info);
                     }
 
-                    string comment ="#"+ authencation.FullName+"Create date: "+ DateTime.Now.ToString() + "#" ;// "#" + db.Khoas.FirstOrDefault().Description + " " + DateTime.Now.ToString() + "#";
+                    string comment = "#" + authencation.FullName + "Create date: " + DateTime.Now.ToString() + "#";// "#" + db.Khoas.FirstOrDefault().Description + " " + DateTime.Now.ToString() + "#";
                     string temp = "/TrainingFile/";
                     if (type.Equals("one"))
                         temp = "/TrainingFile/Thay/";
-                    string word = "word"+ authencation.Id+ ".txt";
+                    string word = "word" + authencation.Id + ".txt";
                     string pathFile = Path.Combine(temp, word);
                     string path = Server.MapPath("~" + pathFile);
                     if (!System.IO.File.Exists(path))
@@ -382,7 +462,7 @@ namespace CropImage.Areas.Core.Controllers
                     return Json(new ExecuteResult() { Isok = true, Data = pathFile, Message = "Is ok" }, JsonRequestBehavior.AllowGet);
 
                 }
-               // return Json(new ExecuteResult() { Isok = false, Data = null, Message = "Key k đúng hoặc k có quyền ghi file" }, JsonRequestBehavior.AllowGet);
+                // return Json(new ExecuteResult() { Isok = false, Data = null, Message = "Key k đúng hoặc k có quyền ghi file" }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
@@ -400,7 +480,7 @@ namespace CropImage.Areas.Core.Controllers
                 FileHelper.CreateFolderIfNotExist(targetFolder);
                 //thêm file mới vào
                 string fileName = Guid.NewGuid().ToString() + ".zip";
-                ZipFile.CreateFromDirectory(source, targetFolder + "\\" + fileName, CompressionLevel.Fastest,true);
+                ZipFile.CreateFromDirectory(source, targetFolder + "\\" + fileName, CompressionLevel.Fastest, true);
                 return fileName;
             }
             catch

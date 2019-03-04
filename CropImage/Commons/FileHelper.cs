@@ -98,7 +98,8 @@ namespace CropImage.Commons
             
             try
             {
-                await Task.Run(() => System.IO.File.Delete(fileName));
+                //await Task.Run(() => System.IO.File.Delete(fileName));
+                await Task.Factory.StartNew(() => File.Delete(fileName));
                 return true;
             }
             catch 
@@ -107,6 +108,36 @@ namespace CropImage.Commons
                 
             }
             
+        }
+        public static bool DeleteFile(string fileName)
+        {
+
+            try
+            {
+                System.IO.File.Delete(fileName);
+                return true;
+            }
+            catch
+            {
+                return false;
+
+            }
+
+        }
+        public static bool DeleteFile(string fileName, ref string error)
+        {
+
+            try
+            {
+                System.IO.File.Delete(fileName);
+                return true;
+            }
+            catch(Exception ex)
+            {
+                error = ex.Message;
+                return false;
+            }
+
         }
         public static void CreateFile(string filePath, string text)
         {

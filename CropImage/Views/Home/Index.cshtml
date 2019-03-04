@@ -23,10 +23,10 @@
                                 <div class="col-md-7 col-sm-12 responsive-1024">
                                     <h4> Khoanh vùng hình ảnh và điền mô tả cho hình ảnh</h4>
                                     
-                                    <h3 class="text-danger">@ViewBag.Error</h3>
+                                    <h3 class="text-danger Derror">@ViewBag.Error</h3>
                                     <div id="imgCrop">
                                         @*<img src="@ViewBag.Image" id="demo2" alt="Jcrop Example" data-object-id="@ViewBag.idImage" class="img-responsive " />*@
-                                        <img src="@ViewBag.Image" id="demo2" alt="Main image" data-object-id="@ViewBag.idImage" class=" " style="width:@(ViewBag.widthImage==0?"":ViewBag.widthImage); height:@(ViewBag.heightImage==0?"":ViewBag.heightImage)" />
+                                        <img src="@ViewBag.Image" id="demo2" alt="Main image" data-object-id="@ViewBag.idImage" class="DImage " style="width:@(ViewBag.widthImage==0?"":ViewBag.widthImage); height:@(ViewBag.heightImage==0?"":ViewBag.heightImage)" />
                                     </div>
                                     <div class="form-actions margin-top-30">
                                         <div class="row">
@@ -159,12 +159,20 @@
                 $.ajax({
                     type: 'GET',
                     url: url,
-                    success: function (msg) {
+                    success: function (result) {
                         $('#imgCrop').html(msg);
                         var idimg = $('#demo2').attr("data-object-id");
                         $('#idImage').val(idimg);
-                        //$("#demo2").attr('src', msg.Data);
-                        //$("#demo2").attr('data-object-id', msg.objectId);
+                        //if (result.Isok == true) {
+                        //    $(".DImage").attr('src', result.Data);
+                        //    $(".DImage").attr('data-object-id', result.objectId);
+                        //    $(".DImage").css('width', result.Width);
+                        //    $(".DImage").css('height', result.Height);
+                        //}
+                        //else {
+                        //    $(".Derror").text(result.Error)
+                        //}
+                       
                     },
                     error: function (data) {
                         alert('Đã sảy ra lỗi trong quá trình xử lý');

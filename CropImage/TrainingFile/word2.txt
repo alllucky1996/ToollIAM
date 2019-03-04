@@ -1,4 +1,4 @@
-#Nguyễn Anh DũngCreate date: 12-Feb-19 3:06:32 PM#
-2-000kieu-00-00 ok 255 104 0 98 38 TL nhanh
-2-000kieu-00-00 ok 255 0 0 98 38 TL nhanh
-2-000kieu-00-00 ok 255 0 0 21 38 TL n
+#Nguyễn Anh DũngCreate date: 15-Feb-19 6:35:27 PM#
+2-000Kieu-00-00 err 255 9 7 53 24 TL cai
+2-000Kieu-00-02 ok 255 71 3 59 28 TL nha
+2-000kieu-01-01 ok 255 101 4 26 33 TL nhanh

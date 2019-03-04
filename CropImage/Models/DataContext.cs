@@ -22,6 +22,9 @@ namespace CropImage.Models
         public DbSet<Khoa> Khoas { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Log> Logs { get; set; }
+        public DbSet<TrangThai> TrangThais { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<AccountRole> AccountRoles { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
            // modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();

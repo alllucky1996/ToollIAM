@@ -1,12 +1,15 @@
-﻿using CropImage.Commons;
+﻿using CropImage.Areas;
+using CropImage.Commons;
 using CropImage.Handler.Crop;
 using CropImage.Models;
 using CropImage.Models.SysTem;
 using CropImage.Models.ViewModels;
 using Emgu.CV;
 using Emgu.CV.Structure;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,48 +29,53 @@ namespace CropImage.Controllers
 
         private async Task<int> CreateLogAsync(string value)
         {
-            //var _log = new Log();
-
-            //_log.EntityName = "ImageCroped";
-            //_log.Action = "Create";
-            //_log.AccountId = accountId;
-            //_log.NewValue = value;
-            //_log.Descript = "Thêm mới" + _log.EntityName;
-            //db.Logs.Add(_log);
-            //var result= await db.SaveChangesAsync();
-            //return result;
-             return await _log.CreateAsync(accountId, value);
+            return await _log.CreateAsync(accountId, value);
+        }
+        private async Task<int> CreateLogAsync(string value, string Mota = null)
+        { 
+            return await _log.CreateAsync(accountId, value, Mota);
+        }
+        private async Task<int> CreateLogAsync(ImageCroped img, string Mota = null)
+        { 
+            string value = JsonConvert.SerializeObject(img);
+            return await _log.CreateAsync(accountId, value, Mota);
+        }
+        private async Task<int> CreateLogAsync(string value, string action, string Mota = null)
+        {
+           // var ac = Session[SessionEnum.AccountId] == null ? accountId : Session[SessionEnum.AccountId];
+            return await _log.CreateAsync(accountId, value, action, Mota);
         }
         public ActionResult Index()
         {
             return RedirectToAction("Index", "CoreHome", new { area = "Core" });
+           // return Redirect("/Login");
         }
 
         #region old 
 
-     //   private DataContext db = new DataContext();
+        //   private DataContext db = new DataContext();
         private string PreViewImage = "~/TempImage/";
-        public int widthImage { get; set; }
-        public int heightImage { get; set; }
+        private int widthImage = 0;
+        private int heightImage = 0;
         #region get 
-        void baseView()
-        {
-            var img = db.Images.FirstOrDefault();
+        //void baseView()
+        //{
+        //    var img = db.Images.Where(o=>o.AccountId == accountId).FirstOrDefault();
 
-            ViewBag.Image = img.Uri == null ? "/Uploads/Images/Mau1.jpg" : img.Uri;
-            ViewBag.idImage = 1;
-            int h;
-            string link = img.Uri == null ? "~/Uploads/Images/Mau1.jpg" : "~" + img.Uri;
-            ViewBag.widthImage = CropHelper.WidthImage(Server.MapPath(link), out h);
-            ViewBag.heightImage = h;
-            ViewBag.PreViewImage = "/TempImage/tempImages.jpg";
-            #region drop
-            var listDau = db.Daus;
-            ViewBag.IdDau = new SelectList(listDau, "Code", "Name");
-            var listLoaiTu = db.LoaiTus;
-            ViewBag.IdLoaiTu = new SelectList(listLoaiTu, "Code", "Name");
-            #endregion
-        }
+        //    ViewBag.Image = img.Uri == null ? "/Uploads/Images/Mau1.jpg" : img.Uri;
+        //    ViewBag.idImage = 1;
+        //    int h;
+        //    string link = img.Uri == null ? "~/Uploads/Images/Mau1.jpg" : "~" + img.Uri;
+        //    ViewBag.widthImage = CropHelper.WidthImage(Server.MapPath(link), out h);
+        //    ViewBag.heightImage = h;
+        //    ViewBag.PreViewImage = "/TempImage/tempImages.jpg";
+        //    #region drop
+        //    var listDau = db.Daus;
+        //    ViewBag.IdDau = new SelectList(listDau, "Code", "Name");
+        //    var listLoaiTu = db.LoaiTus;
+        //    ViewBag.IdLoaiTu = new SelectList(listLoaiTu, "Code", "Name");
+        //    #endregion
+        //}
         void baseView(Image img)
         {
             ViewBag.Image = img.Uri;
@@ -82,24 +90,22 @@ namespace CropImage.Controllers
             ViewBag.IdLoaiTu = new SelectList(listLoaiTu, "Code", "Name");
             #endregion
         }
-
-        //public ActionResult Index()
-        //{
-        //    baseView();
-
-        //    return View();
-        //}
+         
         public async Task<ActionResult> Pre(long id)
         {
+            if (accountId == -1) return Redirect("/Login/Index"); 
+            var firstId = db.Images.FirstOrDefault(o => o.AccountId == accountId).Id;
             Image img = null;
             string error = "";
-            if (id > 1)
+            if ( id == firstId || id > firstId)
             {
-                img = await db.Images.FindAsync(id - 1);
+                img = db.Images.Where(o=>o.AccountId == accountId && o.Id == (id - 1)).FirstOrDefault();
+               
                 while (img == null)
                 {
                     id--;
-                    img = await db.Images.FindAsync(id);
+                    img = db.Images.Where(o => o.AccountId == accountId && o.Id == (id)).FirstOrDefault();
+                    //  img = await db.Images.FindAsync(id);
                 }
             }
             else
@@ -109,6 +115,7 @@ namespace CropImage.Controllers
             }
             ViewBag.Error = error;
             baseView(img);
+             await CreateLogAsync("Đang làm dữ liệu đến" + img.Id);
             #region drop
             var listDau = db.Daus;
             ViewBag.Dau = new SelectList(listDau, "Code", "Name");
@@ -120,17 +127,21 @@ namespace CropImage.Controllers
         }
         public async Task<ActionResult> Next(long id)
         {
-            var lastImg = db.Images.OrderByDescending(u => u.Id).FirstOrDefault();
+            if (accountId == -1) return Redirect("/Login/Index"); 
+            var lastImg = db.Images.Where(o=>o.AccountId == accountId).OrderByDescending(u => u.Id).FirstOrDefault();
             string error = "";
             Image img;
             if (id < lastImg.Id)
             {
-                img = await db.Images.FindAsync(id + 1);
+                img = db.Images.Where(o => o.AccountId == accountId && o.Id == (id + 1)).FirstOrDefault();
+                // img = await db.Images.FindAsync(id + 1 );
                 while (img == null)
                 {
                     id++;
-                    img = await db.Images.FindAsync(id);
+                    img = db.Images.Where(o => o.AccountId == accountId && o.Id == (id)).FirstOrDefault();
+                    // img = await db.Images.FindAsync(id);
                 }
+                widthImage = CropHelper.WidthImage(Server.MapPath("~" + img.Uri), out heightImage);
 
             }
             else
@@ -140,23 +151,72 @@ namespace CropImage.Controllers
             }
             ViewBag.Error = error;
             baseView(img);
-            //#region drop
-            //var listDau = db.Daus;
-            //ViewBag.Dau = new SelectList(listDau, "Code", "Name");
-            //var listLoaiTu = db.LoaiTus;
-            //ViewBag.LoaiTu = new SelectList(listLoaiTu, "Code", "Name");
-            //#endregion
-            return View();
-            // return Json(new { Isok = true, Data = img.Uri, objectId=img.Id}, JsonRequestBehavior.AllowGet);
+            await CreateLogAsync("Đang làm dữ liệu đến" + img.Id);
+            return PartialView();// View();
+            //if (error != "")
+            //    return Json(new { Isok = false, Error= error}, JsonRequestBehavior.AllowGet);
+            //return Json(new { Isok = true, Data = img.Uri, objectId = img.Id, Width=widthImage, Height= heightImage}, JsonRequestBehavior.AllowGet);
+        }
+        public async Task<ActionResult> ThisIsOk(long id)
+        {
+            if (accountId == -1) return Redirect(GoToLogIn(Request.Url.AbsolutePath));
+            try
+            {
+
+                var item = await db.Images.FindAsync(id);
+                item.MaTrangThai = 2;
+                db.Entry(item).State = EntityState.Modified;
+                var r = await db.SaveChangesAsync();
+                await CreateLogAsync("Cắt đến hình: " + id);
+                // next
+                var lastImg = db.Images.Where(o => o.AccountId == accountId).OrderByDescending(u => u.Id).FirstOrDefault();
+                string error = "";
+                Image img;
+                if (id < lastImg.Id)
+                {
+                    img = db.Images.Where(o => o.AccountId == accountId && o.Id == (id + 1)).FirstOrDefault();
+                    // img = await db.Images.FindAsync(id + 1 );
+                    while (img == null)
+                    {
+                        id++;
+                        img = db.Images.Where(o => o.AccountId == accountId && o.Id == (id)).FirstOrDefault();
+                        // img = await db.Images.FindAsync(id);
+                    }
+                    widthImage = CropHelper.WidthImage(Server.MapPath("~" + img.Uri), out heightImage);
+
+                }
+                else
+                {
+                    img = lastImg;
+                    error = "Không còn ảnh tiếp theo";
+                }
+                ViewBag.Error = error;
+                baseView(img);
+                await CreateLogAsync("Đang làm dữ liệu đến" + img.Id);
+                return PartialView();// View();
+            }
+            catch (Exception)
+            {
+                ViewBag.Error = "lỗi hoàn thành hình";
+                var img = await db.Images.FindAsync(id);
+                baseView(img);
+                await CreateLogAsync("lỗi hoàn thành hình" + id);
+                return PartialView();// View();
+            }
+           
+
+
         }
         public ActionResult Cau()
         {
             //  baseView();
+            if (accountId == -1) return Redirect("/Login/Index"); 
             return PartialView();
         }
         public ActionResult Tu()
         {
             // baseView();
+            if (accountId == -1) return Redirect("/Login/Index"); 
             #region drop
             var listDau = db.Daus;
             ViewBag.IdDau = new SelectList(listDau, "Code", "Name");
@@ -168,6 +228,7 @@ namespace CropImage.Controllers
         public ActionResult AmTiet()
         {
             //  baseView();
+            if (accountId == -1) return Redirect("/Login/Index"); 
             #region drop
             var listDau = db.Daus;
             ViewBag.IdDau = new SelectList(listDau, "Code", "Name");
@@ -179,6 +240,7 @@ namespace CropImage.Controllers
         public ActionResult Chu()
         {
             // baseView();
+            if (accountId == -1) return Redirect("/Login/Index"); 
             #region drop
             var listDau = db.Daus;
             ViewBag.IdDau = new SelectList(listDau, "Code", "Name");
@@ -190,20 +252,21 @@ namespace CropImage.Controllers
         [HttpPost]
         public async Task<ActionResult> CropCau(ImageCroped model, long idImage)
         {
+            if (accountId == -1) return Redirect("/Login/Index"); 
             if (ModelState.IsValid)
             {
                 try
                 {
                     if (model.X == model.Y && model.Width == model.Height && model.Height == 0 && model.Y == 0) Json(new ExecuteResult() { Isok = false, Data = null, Message = "Crop k hợp lệ" });
                     var croped = new ImageCroped();
-                    
+
                     croped = model;
                     croped.Lable = model.Lable.Trim().Replace("  ", " ");
                     croped.ImageId = idImage;
                     db.ImageCropeds.Add(croped);
                     await db.SaveChangesAsync();
-                    await CreateLogAsync(croped.ToString());
-                    
+                    await CreateLogAsync(croped);
+
                     // cắt hình && show
                     var img = db.Images.Find(idImage);
                     if (img != null)
@@ -235,6 +298,7 @@ namespace CropImage.Controllers
         [HttpPost]
         public async Task<ActionResult> CropTu(ImageCroped model, long idImage)
         {
+            if (accountId == -1) return Redirect("/Login/Index"); 
             if (ModelState.IsValid)
             {
                 try
@@ -247,11 +311,11 @@ namespace CropImage.Controllers
                     croped.ImageId = idImage;
                     db.ImageCropeds.Add(croped);
                     await db.SaveChangesAsync();
-                     await CreateLogAsync(croped.ToString());
-                   
+                    await CreateLogAsync(croped);
+
                     //
                     // cắt hình && show nếu là từ ghép 
-                    var c = model.Lable.Trim().Replace("  "," ").Split(' ').Length;
+                    var c = model.Lable.Trim().Replace("  ", " ").Split(' ').Length;
                     if (c > 1)
                     {
                         var img = db.Images.Find(idImage);
@@ -285,8 +349,11 @@ namespace CropImage.Controllers
         [HttpPost]
         public async Task<ActionResult> CropAmTiet(ImageCroped model, long idImage)
         {
+            if (accountId == -1) return Redirect("/Login/Index"); 
             if (ModelState.IsValid)
             {
+                model.Lable = model.Lable.Trim();
+                model.LoaiTu = "TL";
                 // nhầm mức tự động chuyển hay báo ra 
                 if (model.Lable.Replace("  ", " ").Split(' ').Count() > 1)
                 {
@@ -295,27 +362,43 @@ namespace CropImage.Controllers
                 }
                 try
                 {
-                    var croped = new ImageCroped();
-                    croped.Lever = 3;
-                    croped = model;
-                    croped.Lable = model.Lable.Trim().Replace("  ", " ");
-                    croped.ImageId = idImage;
+                    var croped = new ImageCroped() {
+                        Lever = 3,
+                   // croped = model,
+                    Lable = model.Lable.Trim().Replace(" ", ""),
+                    ImageId = idImage,
+                   Description = model.Description,
+                   Dau = model.Dau,
+                   IsOK = model.IsOK,
+                   X = model.X,
+                   Y = model.Y,
+                   Width = model.Width,
+                   Height = model.Height,
+                   Index = model.Index,
+                   Name = model.Name,
+                   Line = model.Line,
+                   LoaiTu = model.LoaiTu,
+                   
+                   
+                };
+                    
                     db.ImageCropeds.Add(croped);
                     await db.SaveChangesAsync();
-                    await CreateLogAsync(croped.ToString());
-                    return Json(new ExecuteResult() { Isok = true, Data = 1, Message = "Saved" });
+                    await CreateLogAsync(croped);
+                    return Json(new ExecuteResult() { Isok = true, Data = 1, Message = "Saved" }, JsonRequestBehavior.AllowGet);
                 }
                 catch (Exception ex)
                 {
-                    return Json(new ExecuteResult() { Isok = false, Data = null, Message = ex.Message });
+                    return Json(new ExecuteResult() { Isok = false, Data = null, Message = ex.Message }, JsonRequestBehavior.AllowGet);
                 }
             }
-            return Json(new ExecuteResult() { Isok = false, Data = null, Message = "Hãy nhập đủ thông tin" });
+            return Json(new ExecuteResult() { Isok = false, Data = null, Message = "Hãy nhập đủ thông tin" }, JsonRequestBehavior.AllowGet);
 
         }
         [HttpPost]
         public async Task<ActionResult> CropChuOrDau(ImageCroped model, long idImage)
         {
+            if (accountId == -1) return Redirect("/Login/Index"); 
             try
             {
                 if (model.IdDau != null)

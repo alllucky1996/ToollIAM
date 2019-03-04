@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace CropImage.Handler.Crop
@@ -22,9 +23,9 @@ namespace CropImage.Handler.Crop
         //{
         //    MainImage = matImg.ToImage<Bgr, byte>();
         //}
-        public static int WidthImage(string uri, out int Height )
+        public static int WidthImage(string uri, out int Height)
         {
-           var any= System.IO.Directory.Exists(uri);
+            var any = System.IO.Directory.Exists(uri);
             if (!any)
             {
                 Height = 0;
@@ -38,6 +39,25 @@ namespace CropImage.Handler.Crop
         {
             return Crop(img, new Rectangle(x, y, width, height));
         }
+        public static async Task<string> SaveCropAsync(string img, int x, int y, int width, int height, string fileName)
+        {
+            try
+            {
+                await Task.Run(() =>
+                {
+                    Bitmap source = new Bitmap(img);
+                    Bitmap CroppedImage = source.Clone(new Rectangle(x, y, width, height), source.PixelFormat);
+                    CroppedImage.Save(fileName);
+                });
+                return fileName;
+            }
+            catch (Exception ex)
+            {
+                return "[ERROR]: 0xD00 '" + ex.Message+"'";
+
+            }
+
+        }
         public static Image<Bgr, byte> Crop(Image<Bgr, byte> img, Rectangle rectangle)
         {
             //Mat mat = new Mat();
@@ -48,9 +68,24 @@ namespace CropImage.Handler.Crop
         {
             return new Mat(img.Mat, rectangle).Bitmap;
         }
-       
+
         // save return ok? true: false
-        public static bool Save(Image<Bgr, byte> MainImage,string fileName)
+        public static bool Save(Image<Bgr, byte> MainImage, string fileName)
+        {
+            try
+            {
+                Bitmap bm = new Bitmap(MainImage.ToBitmap());
+                bm.Save(fileName);
+                // MainImage.Save(fileName);
+                return true;
+            }
+            catch
+            {
+                return false;
+
+            }
+        }
+        public static bool Save(Bitmap MainImage, string fileName)
         {
             try
             {
@@ -64,19 +99,21 @@ namespace CropImage.Handler.Crop
             }
         }
         // error = save ok? null: ex
-        public static void Save(Image<Bgr, byte> MainImage,string fileName, out string error)
+        public static void Save(Image<Bgr, byte> MainImage, string fileName, out string error)
         {
             try
             {
-                MainImage.Save(fileName);
+                //MainImage.Save(fileName);
+                Bitmap bm = new Bitmap(MainImage.ToBitmap());
+                bm.Save(fileName);
                 error = null;
             }
             catch (Exception ex)
             {
-                error = ex.Message;
+                error = ex.ToString();
             }
         }
-        public static bool CropAndSave(Image<Bgr, byte> img, Rectangle rectangle,out string fileName)
+        public static bool CropAndSave(Image<Bgr, byte> img, Rectangle rectangle, out string fileName)
         {
             try
             {

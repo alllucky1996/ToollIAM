@@ -122,20 +122,27 @@
                     });
                     var nRow = $(this).parents('tr')[0];
                     var $id = $(nRow).attr('data-objectid');
-                    var url = '@CRoute'+'Delete/' + $id;
+                    //var url = '@CRoute'+'Delete/' + $id;
+                    var url = '@CRoute'+'DeleteRef/' + $id;
                     $.ajax({
                         type: 'POST',
                         url: url,
                         dataType: 'json',
                         data: { code: $id },
                         success: function (result) {
-                            if (result.Isok == true) {
+                            
+                            if (result.Isok == true && result.IsWarning ==true) {
+                                showNoty('Có gì đó không ổn!' + result.Message, 'warning', 'center', 5000);
+                                //location.reload();
+                                loadPage();
+                            }
+                            else if (result.Isok == true) {
                                 showNoty('Đã xóa ' + result.Data + 'thành công!', 'success', 'center', 5000);
                                 //location.reload();
                                 loadPage();
                             }
                             else {
-                                showNoty(result.message, 'error', 'center', 5000);
+                                showNoty(result.Message, 'error', 'center', 5000);
                             }
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
@@ -146,7 +153,7 @@
                         }
                     });
                 });
-                $('.edit').on('click', function () { alert("sửa làm chi cho cực hãy xóa đi r add cái mới "); return; });
+               
             }
             loadPage();
 

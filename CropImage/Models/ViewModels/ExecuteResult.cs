@@ -11,5 +11,6 @@ namespace CropImage.Models.ViewModels
         public object Data { get; set; }
         public string Message { get; set; }
         public string PreVeiwImage { get; set; }
+        public bool? IsWarning { get; set; }
     }
 }

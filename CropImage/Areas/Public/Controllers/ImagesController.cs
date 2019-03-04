@@ -87,7 +87,7 @@ namespace CropImage.Areas.Public.Controllers
                         item.code = "";// ghi gile theo cấu trúc
                         item.Name = Path.GetFileNameWithoutExtension(fileName);// ghi gile theo cấu trúc
                         item.Description = file.FileName;
-                        item.TrangThai = 0;
+                        item.MaTrangThai = 0;
                         item.Uri = fullFilePath;
 
                         db.Images.Add(item);

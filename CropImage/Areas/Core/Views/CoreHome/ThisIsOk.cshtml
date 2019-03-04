@@ -1,0 +1,13 @@
+﻿@model CropImage.Models.ImageCroped
+@{
+    ViewBag.Title = "FSI";
+    string CName = ViewBag.CName == null ? "Home" : ViewBag.CName;
+
+    Layout = "~/Views/Shared/_Layout3.cshtml";
+}
+
+<div id="imgCrop">
+    <img src="@ViewBag.Image" id="demo2" alt="Jcrop Example" data-object-id="@ViewBag.idImage" class=" " style="width:@ViewBag.widthImage; height:@ViewBag.heightImage" />
+    <h3 class="text-danger">@ViewBag.Error</h3>
+</div>
+

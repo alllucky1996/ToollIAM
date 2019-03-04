@@ -15,6 +15,7 @@ namespace CropImage.Models.SysTem
         public string UserName { get; set; }
         public string FullName { get; set; }
         public string PassWord { get; set; }
+        public string Picture { get; set; }
         public DateTime CreateDate { get; set; }
         public bool IsDelete { get; set; }
         public Account()
@@ -22,6 +23,8 @@ namespace CropImage.Models.SysTem
             this.CreateDate = DateTime.Now;
             this.IsDelete = false;
         }
+        public virtual ICollection<Image> ListImg { get; set; }
+
     }
     
 }

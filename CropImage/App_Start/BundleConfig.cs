@@ -91,8 +91,8 @@ namespace CropImage
                  "~/Theme/assets/global/plugins/jquery-file-upload/js/jquery.fileupload.js",
                  "~/Theme/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-process.js",
                  "~/Theme/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-image.js",
-                 "~/Theme/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-audio.js",
-                 "~/Theme/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-video.js",
+                 //"~/Theme/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-audio.js",
+                 //"~/Theme/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-video.js",
                  "~/Theme/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-validate.js",
                  "~/Theme/assets/global/plugins/jquery-file-upload/js/jquery.fileupload-ui.js"
                 //,"~/Theme/assets/pages/scripts/form-fileupload.js"

@@ -26,13 +26,14 @@
                                     <h3 class="text-danger">@ViewBag.Error</h3>
                                     <div id="imgCrop">
                                         @*<img src="@ViewBag.Image" id="demo2" alt="Jcrop Example" data-object-id="@ViewBag.idImage" class="img-responsive " />*@
-                                        <img src="@ViewBag.Image" id="demo2" alt="Main image" data-object-id="@ViewBag.idImage" class=" " style="width:@(ViewBag.widthImage==0?"":ViewBag.widthImage); height:@(ViewBag.heightImage==0?"":ViewBag.heightImage)" />
+                                        <img src="@ViewBag.Image" id="demo2" alt="Main image" data-object-id="@ViewBag.idImage" class="DImage " style="width:@(ViewBag.widthImage==0?"":ViewBag.widthImage); height:@(ViewBag.heightImage==0?"":ViewBag.heightImage)" />
                                     </div>
                                     <div class="form-actions margin-top-30">
                                         <div class="row">
-                                            <div class="col-md-offset-3 col-md-9">
-                                                <a class="btn default" id="Left"><i class="fa fa-angle-left"></i>Trước</a>
-                                                <a class="btn success" id="Right">Tiếp theo<i class="fa fa-angle-right"></i></a>
+                                            <div class="col-md-9 row">
+                                                <div class="col-md-4"><a class="btn default" id="Left"><i class="fa fa-angle-left"></i> Trước</a></div>
+                                                <div class="col-md-4">  <a class="btn blue" id="ThisIsOk"><i class="fa fa-check"></i>Đã khoanh xong</a></div>
+                                                <div class="col-md-4"> <a class="btn success" id="Right">Tiếp theo <i class="fa fa-angle-right"></i></a></div>
                                             </div>
                                         </div>
                                     </div>
@@ -42,7 +43,7 @@
                                     <img id="dimgPreview" src="@ViewBag.PreViewImage" alt="preview image" style="height:100px" />
                                 </div>
                             </div>
-                            <div class="col-md-5 col-sm-12 ">
+                            <div class="col-md-5 col-sm-12 " id="blockInput">
                                 <h4>Thông tin chi tiết :</h4>
                                 <div>
                                     <ul class="nav nav-tabs">
@@ -92,6 +93,7 @@
     <script>
 
         jQuery(document).ready(function () {
+            $("#dimgPreview").error(function () { $(this).attr("src","/Uploads/images/No-image-found.jpg") });
             getFirst();
             var x, y, w, h;
             function dGet() {
@@ -123,6 +125,7 @@
                             if ((description === "MucCau") || (description === "MucTu" && msg.Data !== null)) {
                                 var att = msg.Data;
                                 $('#dimgPreview').attr('src', att);
+                                $("#dimgPreview").error(function () { $(this).attr("src", "/Uploads/images/No-image-found.jpg") });
                             }
                             //if (description === "MucTu" && daAm.length>1) {
                             //    var att = msg.Data;
@@ -173,6 +176,36 @@
                     }
                 });
             });
+            $('#ThisIsOk').click(function () {
+                $.blockUI({
+                    message: 'Vui lòng đợi!',
+                    overlayColor: 'none',
+                    cenrerY: true,
+                    boxed: true,
+                    zIndex: 99999,
+                   // target: '#blockInput'
+                });
+                // ++
+                var $id = $('#demo2').attr('data-object-id');
+                var url = '/Home/ThisIsOk?id=' + $id;
+                //location.href = url;
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    success: function (result) {
+                        $('#imgCrop').html(result);
+                        var idimg = $('#demo2').attr("data-object-id");
+                        $('#idImage').val(idimg);
+                   
+                    },
+                    error: function (data) {
+                        alert('Đã sảy ra lỗi trong quá trình xử lý');
+                    },
+                    complete: function (result) {
+                        $.unblockUI();
+                    }
+                });
+            });
             $('#Right').click(function () {
                 $.blockUI({
                     message: 'Vui lòng đợi!',
@@ -188,12 +221,29 @@
                 $.ajax({
                     type: 'GET',
                     url: url,
-                    success: function (msg) {
-                        $('#imgCrop').html(msg);
+                    success: function (result) {
+                        $('#imgCrop').html(result);
                         var idimg = $('#demo2').attr("data-object-id");
                         $('#idImage').val(idimg);
-                        //$("#demo2").attr('src', msg.Data);
-                        //$("#demo2").attr('data-object-id', msg.objectId);
+                        //if (result.Isok == true) {
+                        // //   $(".DImage").attr('src', result.Data);
+                        //    $(".DImage").attr('data-object-id', result.objectId);
+                        //    $(".DImage").css('width', result.Width);
+                        //    $(".DImage").css('height', result.Height);
+                        //    var imgs = $("img");
+                        //    var x = $(".DImage").attr('src');
+                        //    imgs.each(function () {
+                               
+                        //        var y = $(this).attr("src");
+                        //        if ( y== x) {
+                        //            $(this).attr("src", result.Data);
+                        //        }
+                        //    });
+                        //    $("#imgCrop").load();
+                        //}
+                        //else {
+                        //    $(".Derror").text(result.Error)
+                        //}
                     },
                     error: function (data) {
                         alert('Đã sảy ra lỗi trong quá trình xử lý');

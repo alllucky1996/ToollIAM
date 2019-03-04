@@ -1,4 +1,11 @@
-﻿<!DOCTYPE html>
+﻿@{ 
+    var Id = Session[CropImage.Areas.SessionEnum.AccountId];
+    var Name = Session[CropImage.Areas.SessionEnum.FullName];
+    var Email = Session[CropImage.Areas.SessionEnum.Email];
+  
+
+}
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -72,30 +79,19 @@
                         <li class="separator hide"> </li>
 
                         <li class="dropdown dropdown-user dropdown-light">
-                            <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
-                                <span class="username username-hide-on-mobile"> Nick </span>
+                            @*<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true" id="Login">*@
+                            <a href="" class=" " data-toggle=" " data-hover=" " data-close-others=" " id="Login">
+                                <span class="username username-hide-on-mobile" id="nameUser" obj="@Name"> @(Name == null ? "Đăng nhập" : Name) </span>
                                 <!-- DOC: Do not remove below empty space(&nbsp;) as its purposely used -->
-
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-default">
-                                <li>
-                                    <a href="#">
-                                        <i class="icon-user"></i> My Profile
-                                    </a>
-                                </li>
 
-                                <li>
-                                    <a href="#">
-                                        <i class="icon-key"></i> Log Out
-                                    </a>
-                                </li>
-                            </ul>
                         </li>
                         <!-- END USER LOGIN DROPDOWN -->
                         <!-- BEGIN QUICK SIDEBAR TOGGLER -->
                         <li class="dropdown dropdown-extended quick-sidebar-toggler">
-                            <span class="sr-only">Toggle Quick Sidebar</span>
-                            <i class="icon-logout"></i>
+                            <a href="/Login/Logout">
+                                <i class="icon-logout"></i>
+                            </a>
                         </li>
                         <!-- END QUICK SIDEBAR TOGGLER -->
                     </ul>
@@ -174,10 +170,21 @@
     @Scripts.Render("~/js/metronic/plupload")
     @*@Scripts.Render("~/bundles/bootstrap")*@
     <script>
-        //$('.dChange').click(function (e) {
-        //    var x = $(this).attr("href");
-        //    if (confirm("chuyển trang ") == false) { return; };
-        //});
+        jQuery(document).ready(function () {
+            var us ='@(Id== null? "xxx":Id)';//$('#nameUser').attr('obj');
+            if ( us!== "xxx") {
+                //class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true"
+                $("#Login").attr("class", "dropdown-toggle");
+                $("#Login").attr("data-toggle", "dropdown");
+                $("#Login").attr("data-hover", "dropdown");
+                $("#Login").attr("data-close-others", "true");
+
+               // $("#DropUser").addClass("hidden");
+            }
+            else {
+                $("#Login").attr("href", "/Login/Index?returnUrl=/Core/Images/Index");
+            }
+        });
         
     </script>
     @RenderSection("scripts", required: false)

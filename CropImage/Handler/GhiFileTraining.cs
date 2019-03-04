@@ -6,6 +6,7 @@ using Emgu.CV.Structure;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,7 +36,7 @@ namespace CropImage.Handler
             return false;
         }
         // nhè ra fileName thôi
-        public static async Task<string> CutImageAsync(string ImageRoot, string path, ImageCroped imageCroped,string fileNameTarget,string comment = null)
+        public static async Task<string> CutImageAsync(string ImageRoot, string path, ImageCroped imageCroped, string fileNameTarget, string comment = null)
         {
             try
             {
@@ -44,8 +45,8 @@ namespace CropImage.Handler
 
                 // ghi file mô tả
                 string data = string.IsNullOrEmpty(comment) ? "được cắt từ hình: " + ImageRoot : comment;
-                if(!Directory.Exists(path+"\\Mota.txt"))
-                await FileHelper.CreateFileAsync(path, "MoTa.txt", data);
+                if (!Directory.Exists(path + "\\Mota.txt"))
+                    await FileHelper.CreateFileAsync(path, "MoTa.txt", data);
 
                 // hình mới tạo ra ghi đè luôn file đã có nếu thao tác là training lại với mỗi phần tử
                 //string kieu = string.IsNullOrEmpty(imageCroped.Image.KieuChu) ? "00kieu" : imageCroped.Image.KieuChu;
@@ -54,7 +55,8 @@ namespace CropImage.Handler
                 //string nameFile = imageCroped.Image.Name+"-"+ kieu + "-" + imageCroped.Line.ToString("D2") + "-" + imageCroped.Index.ToString("D2") + ".png";
                 string nameFile = fileNameTarget + "-" + imageCroped.Line.ToString("D2") + "-" + imageCroped.Index.ToString("D2") + ".png";
                 bool ok = false;
-                await Task.Run(() => {
+                await Task.Run(() =>
+                {
                     ok = CropHelper.Save(CropHelper.Crop(rootImage, imageCroped.X, imageCroped.Y, imageCroped.Width, imageCroped.Height), path + "\\" + nameFile);
                 });
                 if (ok) return nameFile;
@@ -65,5 +67,31 @@ namespace CropImage.Handler
                 return "";
             }
         }
+        public static async Task<string> CutImage(string ImageRoot, string path, ImageCroped imageCroped, string fileNameTarget, string comment = null)
+        {
+            try
+            {
+                FileHelper.CreateFolderIfNotExist(path);
+                // ghi file mô tả
+                string data = string.IsNullOrEmpty(comment) ? "được cắt từ hình: " + ImageRoot : comment;
+                if (!Directory.Exists(path + "\\Mota.txt"))
+                    FileHelper.CreateFile(path, "MoTa.txt", data);
+
+                string nameFile = fileNameTarget + "-" + imageCroped.Line.ToString("D2") + "-" + imageCroped.Index.ToString("D2") + ".png";
+
+
+                string er = await CropHelper.SaveCropAsync(ImageRoot, imageCroped.X, imageCroped.Y, imageCroped.Width, imageCroped.Height, path + "\\" + nameFile);
+                if (er.Contains("[ERROR]"))
+                    return er;
+                return nameFile;
+
+            }
+            catch (Exception ex)
+            {
+                return "[ERROR]: 0xD001'" + ex.Message + "'";
+            }
+        }
+
+
     }
 }
