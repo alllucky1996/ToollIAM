@@ -7,6 +7,7 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -88,17 +89,29 @@ namespace CropImage.Areas.Core.Controllers
             #endregion
         }
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index(long? id)
         {
             if (accountId == -1) return Redirect(GoToLogIn(Request.Url.AbsolutePath));  
-            int x = db.Images.Where(o => o.AccountId == accountId && o.MaTrangThai ==1).Count();
-            if (x<1) return Redirect("/Core/Images/Create");
-            baseView();
-
+            if(id == null)
+            {
+                int x = await db.Images.Where(o => o.AccountId == accountId && o.MaTrangThai == 1).CountAsync();
+                if (x < 1) return Redirect("/Core/Images/Create");
+                baseView();
                 return View();
+            }
+            var img = await db.Images.FindAsync(id);
+            baseView(img);
+            #region drop
+            var listDau = db.Daus;
+            ViewBag.Dau = new SelectList(listDau, "Code", "Name");
+            var listLoaiTu = db.LoaiTus;
+            ViewBag.LoaiTu = new SelectList(listLoaiTu, "Code", "Name");
+            #endregion
+            return View();
+
             //}
             //return RedirectToAction("Index", "CoreHome", new { area = "Public" });
-        }  
+        }
         //#region get 
         //public async Task<ActionResult> Pre(long id)
         //{

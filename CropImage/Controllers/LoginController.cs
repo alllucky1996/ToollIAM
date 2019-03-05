@@ -139,6 +139,7 @@ namespace CropImage.Controllers
         {
             if(key == "phongcongnghe")
             {
+               // db.Accounts.Add(new Account() {FullName="Phạm thu hà", Email="hapt@fsivietnam.com.vn",PassWord= StringHelper.stringToSHA512("12356"),UserName="HaPT" });
                 // tạo role
                 List<Role> roles = new List<Role>();
                 roles.Add(new Role() { Code = "QuanTri", Name = "Quản trị" });
@@ -149,6 +150,7 @@ namespace CropImage.Controllers
                 // tạo phân quyền 
                 List<AccountRole> acr = new List<AccountRole>();
                 var Ha = await db.Accounts.Where(o => o.UserName.ToLower() == "hapt").FirstOrDefaultAsync();
+                if(Ha== null) db.Accounts.Add(new Account() { FullName = "Phạm thu hà", Email = "hapt@fsivietnam.com.vn", PassWord = StringHelper.stringToSHA512("12356"), UserName = "HaPT" });
                 var d = await db.Accounts.Where(o => o.UserName.ToLower() == "alllucky").FirstOrDefaultAsync();
                 acr.Add(new AccountRole() { AccountId = Ha.Id, CoreRole = "QuanTri", CreateDate = DateTime.Now });
                 acr.Add(new AccountRole() { AccountId = d.Id, CoreRole = "QuanTri", CreateDate = DateTime.Now });

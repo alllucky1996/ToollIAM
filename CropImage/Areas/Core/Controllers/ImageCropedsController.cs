@@ -31,7 +31,8 @@ namespace CropImage.Areas.Core.Controllers
         private async Task<int> CreateLogAsync(string value, string Mota = null)
         {
             //    var ac = Session[SessionEnum.AccountId] == null ? 0 : Session[SessionEnum.AccountId];
-            return await _log.CreateAsync(accountId, value, Mota);
+            var x = await _log.CreateAsync(accountId, value, Mota);
+            return x;
         }
         private async Task<int> CreateLogAsync(ImageCroped model, string action, string mota = null)
         {
@@ -391,19 +392,20 @@ namespace CropImage.Areas.Core.Controllers
                     else
                         Error += item.Id + erS + newUrl + ";";
                 }
-                if (Error != "")
-                    return Json(new ExecuteResult() { Isok = false, Message = Error });
+                //if (Error != "")
+                //    return Json(new ExecuteResult() { Isok = false, Message = Error });
             }
-            string Source = Server.MapPath("~/Traning/data");
-            string auth = accountId.ToString();// AccountId == null ? "1" : AccountId.Value.ToString();
+            string auth = accountId.ToString();
+            string Source = Server.MapPath("~/Traning/data/3/"+auth);
             string target = Server.MapPath("~/Traning/Temp/" + auth);
             var r = AddZipFile(Source, target);
-            await CreateLogAsync("Đã xuất tất cả ảnh đã cắt: " + r);
+            
             if (r != "")
             {
                 await CreateLogAsync("Đã tải tập dữ liệu training: ");
                 return Json(new ExecuteResult() { Isok = true, Data = "/Traning/Temp/" + auth + "/" + r, Message = "Tạo file Thành công" });
             }
+            await CreateLogAsync("Trích xuất file tải về có vấn đề: " + r);
             return Json(new ExecuteResult() { Isok = false, Data = null, Message = "Không tạo được file" });
         }
 
@@ -479,11 +481,11 @@ namespace CropImage.Areas.Core.Controllers
                 FileHelper.DeleteFolder(targetFolder);
                 FileHelper.CreateFolderIfNotExist(targetFolder);
                 //thêm file mới vào
-                string fileName = Guid.NewGuid().ToString() + ".zip";
+                string fileName =DateTime.Now.ToString("yyyy_MM_dd") +"_"+ Guid.NewGuid().ToString() + ".zip";
                 ZipFile.CreateFromDirectory(source, targetFolder + "\\" + fileName, CompressionLevel.Fastest, true);
                 return fileName;
             }
-            catch
+            catch (Exception ex)
             {
                 return "";
             }

@@ -21,6 +21,7 @@ namespace CropImage.Controllers
     public class HomeController : BaseController
     {
         private LogHelper<ImageCroped> _log;
+        string CRoute = "/Home";
 
         public HomeController()
         {
@@ -40,9 +41,9 @@ namespace CropImage.Controllers
             string value = JsonConvert.SerializeObject(img);
             return await _log.CreateAsync(accountId, value, Mota);
         }
-        private async Task<int> CreateLogAsync(string value, string action, string Mota = null)
+        private async Task<int> CreateLogAsync(ImageCroped img, string action, string Mota = null)
         {
-           // var ac = Session[SessionEnum.AccountId] == null ? accountId : Session[SessionEnum.AccountId];
+            string value = JsonConvert.SerializeObject(img);
             return await _log.CreateAsync(accountId, value, action, Mota);
         }
         public ActionResult Index()
@@ -58,24 +59,18 @@ namespace CropImage.Controllers
         private int widthImage = 0;
         private int heightImage = 0;
         #region get 
-        //void baseView()
-        //{
-        //    var img = db.Images.Where(o=>o.AccountId == accountId).FirstOrDefault();
-
-        //    ViewBag.Image = img.Uri == null ? "/Uploads/Images/Mau1.jpg" : img.Uri;
-        //    ViewBag.idImage = 1;
-        //    int h;
-        //    string link = img.Uri == null ? "~/Uploads/Images/Mau1.jpg" : "~" + img.Uri;
-        //    ViewBag.widthImage = CropHelper.WidthImage(Server.MapPath(link), out h);
-        //    ViewBag.heightImage = h;
-        //    ViewBag.PreViewImage = "/TempImage/tempImages.jpg";
-        //    #region drop
-        //    var listDau = db.Daus;
-        //    ViewBag.IdDau = new SelectList(listDau, "Code", "Name");
-        //    var listLoaiTu = db.LoaiTus;
-        //    ViewBag.IdLoaiTu = new SelectList(listLoaiTu, "Code", "Name");
-        //    #endregion
-        //}
+        void baseView()
+        {
+           
+            ViewBag.Image =   "/Uploads/Images/No-image-found.jpg"  ;
+            ViewBag.idImage = -1;
+            ViewBag.CRoute = CRoute;
+            int h;
+            string link =  "~/Uploads/Images/No-image-found.jpg" ;
+            ViewBag.widthImage = CropHelper.WidthImage(Server.MapPath(link), out h);
+            ViewBag.heightImage = h;
+            ViewBag.PreViewImage = "/Uploads/Images/No-image-found.jpg";
+        }
         void baseView(Image img)
         {
             ViewBag.Image = img.Uri;
@@ -90,7 +85,27 @@ namespace CropImage.Controllers
             ViewBag.IdLoaiTu = new SelectList(listLoaiTu, "Code", "Name");
             #endregion
         }
-         
+
+        public async Task<ActionResult> Curent(long id)
+        {
+            Image img  = await db.Images.Where(o => o.AccountId == accountId && o.Id == (id)).FirstOrDefaultAsync();
+           if(img != null)
+            {
+               
+                baseView(img);
+                #region drop
+                var listDau = db.Daus;
+                ViewBag.Dau = new SelectList(listDau, "Code", "Name");
+                var listLoaiTu = db.LoaiTus;
+                ViewBag.LoaiTu = new SelectList(listLoaiTu, "Code", "Name");
+                #endregion
+                return View();
+            }
+            ViewBag.Error = "Không tồn tại hình bạn chọn";
+            baseView();
+            return View();
+            // return Json(new ExecuteResult() { Isok = true, Data = img}, JsonRequestBehavior.AllowGet);
+        }
         public async Task<ActionResult> Pre(long id)
         {
             if (accountId == -1) return Redirect("/Login/Index"); 
@@ -349,7 +364,8 @@ namespace CropImage.Controllers
         [HttpPost]
         public async Task<ActionResult> CropAmTiet(ImageCroped model, long idImage)
         {
-            if (accountId == -1) return Redirect("/Login/Index"); 
+            //if (accountId == -1) return Redirect("/Login/Index"); 
+            if (accountId == -1) return Redirect(GoToLogIn(Request.Url.AbsolutePath));  
             if (ModelState.IsValid)
             {
                 model.Lable = model.Lable.Trim();

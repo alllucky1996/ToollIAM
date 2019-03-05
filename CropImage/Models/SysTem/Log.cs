@@ -64,7 +64,7 @@ namespace CropImage.Models.SysTem
             _log.Action = "Create";
             _log.AccountId = accountId.Value;
             _log.NewValue = value;
-            _log.Descript = descript==null? "Thêm mới" + _log.EntityName: descript;
+            _log.Descript = descript==null? "Thêm mới " + _log.EntityName: descript;
             _db.Logs.Add(_log);
             return await _db.SaveChangesAsync();
         }
@@ -76,7 +76,7 @@ namespace CropImage.Models.SysTem
             _log.Action = action;
             _log.AccountId = accountId.Value;
             _log.NewValue = value;
-            _log.Descript = descript == null ? "Thêm mới" + _log.EntityName : descript;
+            _log.Descript = descript == null ? _log.Action + _log.EntityName : descript;
             _db.Logs.Add(_log);
             return await _db.SaveChangesAsync();
         }
