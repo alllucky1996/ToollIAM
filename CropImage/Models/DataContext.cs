@@ -25,6 +25,8 @@ namespace CropImage.Models
         public DbSet<TrangThai> TrangThais { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<AccountRole> AccountRoles { get; set; }
+
+        public DbSet<LogInfo> LogInfos { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
            // modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
@@ -32,16 +34,16 @@ namespace CropImage.Models
            //Không khởi tạo data, tạo, tạo lại bảng
             //Database.SetInitializer<DataContext>(null);
             //Có khởi tạo data, tạo, tạo lại bảng khi không tồn tại
-            Database.SetInitializer<DataContext>(new DropCreateDatabaseIfModelChanges<DataContext>());
-            Database.SetInitializer<DataContext>(new DropCreateDatabaseAlways<DataContext>());
-            //Bỏ tùy chọn chuyển tên bảng thành dạng số nhiều khi đọc trong CSDL
-           
+           // Database.SetInitializer<DataContext>(new CreateDatabaseIfNotExists<DataContext>());
+            //Chỉ sửa đổi cấu trúc bảng, không làm mất dữ liệu
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<DataContext, Configuration>());
 
-   
+
             //Tạo DbSet
             //ConfigureModel(modelBuilder);
             this.Configuration.LazyLoadingEnabled = true;
             base.OnModelCreating(modelBuilder);
         }
+      
     }
 }

@@ -394,10 +394,13 @@ namespace CropImage.Areas.Core.Controllers
                 }
                 //if (Error != "")
                 //    return Json(new ExecuteResult() { Isok = false, Message = Error });
+               
+
             }
             string auth = accountId.ToString();
             string Source = Server.MapPath("~/Traning/data/3/"+auth);
             string target = Server.MapPath("~/Traning/Temp/" + auth);
+            int x = await WriteLable(Source);
             var r = AddZipFile(Source, target);
             
             if (r != "")
@@ -462,6 +465,76 @@ namespace CropImage.Areas.Core.Controllers
                         FileHelper.AppenAllText(path, "\n" + item);
                     }
                     return Json(new ExecuteResult() { Isok = true, Data = pathFile, Message = "Is ok" }, JsonRequestBehavior.AllowGet);
+
+                }
+                // return Json(new ExecuteResult() { Isok = false, Data = null, Message = "Key k đúng hoặc k có quyền ghi file" }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new ExecuteResult() { Isok = false, Data = null, Message = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        /// <summary>
+        /// ghi nhãn dữ liệu
+        /// </summary>
+        /// <param name="pathTarget">đường dẫn dương đối trên server. cũng là đường dẫn trr về để tải file</param>
+        /// vào trong pathTarget sẽ mappath("~"+pathTarget) để xử lý ra file
+        /// <returns>JsonResult</returns>
+        private async Task<int> WriteLable(string pathTarget)
+        {
+         //   if (accountId == -1) return Json(new ExecuteResult() {Data = null,Isok = false,Message ="Bạn chưa đăng nhập" }); 
+            try
+            {
+                var authencation = await db.Accounts.FindAsync(accountId);
+                if(authencation == null ) return 0;
+                if (true)
+                {
+                    List<string> listFileName = new List<string>();
+                    List<string> listLable = new List<string>();
+                    // lấy list nhãn đã gán
+                    // lọc từ nào mà có 1 âm tiết thôi
+                    // var listCroped = db.ImageCropeds.Where(o=>o.Lable.Split(' ').Count()==1).ToList();
+                    var listAll = await db.ImageCropeds.Where(o =>  o.Lever == 3 && o.Image.AccountId == accountId).ToListAsync();
+                    var listCroped = listAll.Where(o => o.Lable.Split(' ').Count() == 1);
+                    // lấy ra tên hình ảnh
+                    foreach (var crop in listCroped)
+                    {
+                        listFileName.Add(db.Images.Find(crop.ImageId).Uri); 
+                        
+                        listLable.Add(Path.GetFileNameWithoutExtension(crop.Uri) + " " + crop.Info);
+                    }
+
+                    string comment = "#" + authencation.FullName + "Create date: " + DateTime.Now.ToString() + "#";// "#" + db.Khoas.FirstOrDefault().Description + " " + DateTime.Now.ToString() + "#";
+                  //  string temp = "/TrainingFile/";
+                    
+                    string word = "word" + authencation.Id + ".txt";
+                  //  string pathFile = Path.Combine(temp, word);
+                    string path = "";
+                    if (string.IsNullOrEmpty(pathTarget))
+                    {
+                        string temp = "/TrainingFile/";
+                        path = Server.MapPath("~" + Path.Combine(temp, word));
+                    }
+                    else
+                    {
+                        path = Server.MapPath("~" + pathTarget);
+                    }
+                    // chưa có thì tạo 
+                    if (!System.IO.File.Exists(path))
+                    {
+                        FileHelper.CreateFile(Server.MapPath("~" + Path.Combine(path+"/Lable/", word)), word, comment);
+                    }
+                    // có rồi thì xóa đi tạo lại
+                    if (System.IO.File.Exists(path))
+                    {
+                        System.IO.File.Delete(path);
+                        FileHelper.CreateFile(Server.MapPath("~" + Path.Combine(path+"/Lable/", word)), word, comment);
+                    }
+                    foreach (var item in listLable)
+                    {
+                        FileHelper.AppenAllText(path, "\n" + item);
+                    }
+                    return Json(new ExecuteResult() { Isok = true, Data = path, Message = "Is ok" }, JsonRequestBehavior.AllowGet);
 
                 }
                 // return Json(new ExecuteResult() { Isok = false, Data = null, Message = "Key k đúng hoặc k có quyền ghi file" }, JsonRequestBehavior.AllowGet);

@@ -1,5 +1,6 @@
 ﻿using CropImage.Areas;
 using CropImage.Commons;
+using CropImage.Models;
 using CropImage.Models.SysTem;
 using CropImage.Models.ViewModels;
 using System;
@@ -18,6 +19,14 @@ namespace CropImage.Controllers
         private async Task<int> CreateLogAsync(string value, string Mota = null)
         {
             return await _log.CreateAsync(accountId, value, Mota);
+        }
+        private async Task<int> CreateLogAsync(string value, string action, string Mota = null)
+        {
+            return await _log.CreateAsync(accountId, value, action, Mota);
+        }
+        public LoginController()
+        {
+            _log = new LogHelper<Account>(db);
         }
         // GET: Login
         public ActionResult Login()
@@ -51,8 +60,13 @@ namespace CropImage.Controllers
             Session.Abandon();
             return View();
         }
-        public ActionResult Logout()
+        public async Task<ActionResult> Logout()
         {
+            var user = await db.Accounts.FindAsync(accountId);
+            user.IsOnline = true;
+            db.Entry(user).State = EntityState.Modified;
+            await db.SaveChangesAsync();
+            await CreateLogAsync("Đăng xuất ", "Logout", "Thoát khỏi hệ thống");
             ViewBag.Error = TempData["Error"];
             ViewBag.Message = TempData["Message"];
             ViewBag.Success = TempData["Success"];
@@ -108,27 +122,44 @@ namespace CropImage.Controllers
             {
                 return View(model);
             }
-            string pass = Commons.StringHelper.stringToSHA512(model.PassWord);// StringHelper.stringToSHA512(model.PassWord.Trim());
-            var user = await db.Accounts.Where(o=>o.UserName== model.UserName).FirstOrDefaultAsync();
-            
-            if (user != null && user.PassWord == pass)
+            try
             {
-                //if (!await UserManager.IsEmailConfirmedAsync(user.Id))
-                //{
-                //    ViewBag.errorMessage = "You must have a confirmed email to log on.";
-                //    return View("Error");
-                //}
-                Session[SessionEnum.Email] = user.Email;
-                Session[SessionEnum.AccountId] = user.Id;
-                Session[SessionEnum.FullName] = user.FullName;
-                accountId = user.Id;
-                if (await db.Images.Where(o=>o.AccountId == accountId).CountAsync()<1) return Redirect("/Core/Images/Create?key=1");
-                if (string.IsNullOrEmpty(returnUrl))
-                    //return RedirectToAction("WriteWord", "ImageCropeds", new { area = "Core" });
-                    return RedirectToAction("Index", "CoreHome", new { area = "Core" });
-                    
-                else
-                    return Redirect(returnUrl);
+                string pass = Commons.StringHelper.stringToSHA512(model.PassWord);// StringHelper.stringToSHA512(model.PassWord.Trim());
+                var x = db.Accounts.ToList();
+                var user = await db.Accounts.Where(o => o.UserName == model.UserName).FirstOrDefaultAsync();
+
+                if (user != null && user.PassWord == pass)
+                {
+                    //if (!await UserManager.IsEmailConfirmedAsync(user.Id))
+                    //{
+                    //    ViewBag.errorMessage = "You must have a confirmed email to log on.";
+                    //    return View("Error");
+                    //}
+
+
+                    Session[SessionEnum.Email] = user.Email;
+                    Session[SessionEnum.AccountId] = user.Id;
+                    Session[SessionEnum.FullName] = user.FullName;
+                    accountId = user.Id;
+                    // ghi lịch sử hoạt động
+                    await CreateLogAsync("Đăng nhập ", "LogIn", "Truy cập hệ thống");
+                    // ac đang đăng nhập cập nhật trang tháo online
+                    user.IsOnline = true;
+                    db.Entry(user).State = EntityState.Modified;
+                    await db.SaveChangesAsync();
+                    if (await db.Images.Where(o => o.AccountId == accountId).CountAsync() < 1) return Redirect("/Core/Images/Create?key=1");
+                    if (string.IsNullOrEmpty(returnUrl))
+                        //return RedirectToAction("WriteWord", "ImageCropeds", new { area = "Core" });
+                        return RedirectToAction("Index", "CoreHome", new { area = "Core" });
+
+                    else
+                        return Redirect(returnUrl);
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = ex .Message;
+                return View(model);
             }
             ViewBag.Error = "Sai thông tin";
             return View(model);
@@ -137,9 +168,48 @@ namespace CropImage.Controllers
         [HttpGet]
         public async Task<ActionResult> InitRole(string key)
         {
-            if(key == "phongcongnghe")
+            if(key == "asangvsthomhoathuan")
             {
-               // db.Accounts.Add(new Account() {FullName="Phạm thu hà", Email="hapt@fsivietnam.com.vn",PassWord= StringHelper.stringToSHA512("12356"),UserName="HaPT" });
+                var Daus = new List<Dau>();
+                Daus.Add(new Dau() { Code = 1, Name = "Huyền", Description = "Dấu huyền" });
+                Daus.Add(new Dau() { Code = 2, Name = "Sắc", Description = "Dấu sắc" });
+                Daus.Add(new Dau() { Code = 3, Name = "Nặng", Description = "Dấu nặng" });
+                Daus.Add(new Dau() { Code = 4, Name = "Hỏi", Description = "Dấu hỏi" });
+                Daus.Add(new Dau() { Code = 5, Name = "Ngã", Description = "Dấu ngã" });
+                Daus.ForEach(s => db.Daus.Add(s));
+                db.TrangThais.Add(new TrangThai() { Code = 1, Name = "Chưa cắt" });
+                db.TrangThais.Add(new TrangThai() { Code = 2, Name = "Đã cắt" });
+                db.TrangThais.Add(new TrangThai() { Code = 3, Name = "Đã có dữ liễu" });
+                db.SaveChanges();
+
+                var loaiTu = new List<LoaiTu>();
+                loaiTu.Add(new LoaiTu() { Code = "TL", Name = "Tag later", Description = "đánh dấu sau" });
+                loaiTu.Add(new LoaiTu() { Code = "V", Name = "Động từ" });
+                loaiTu.Add(new LoaiTu() { Code = "adj", Name = "Tính từ" });
+                loaiTu.Add(new LoaiTu() { Code = "adv", Name = "Trạng từ" });
+                loaiTu.ForEach(s => db.LoaiTus.Add(s));
+                db.Accounts.Add(new Account() { FullName = "Phạm Thu Hà", UserName = "HaPT", PassWord = Commons.StringHelper.stringToSHA512("123456") });
+                db.Accounts.Add(new Account() { FullName = "Nguyễn Anh Dũng", UserName = "alllucky", PassWord = Commons.StringHelper.stringToSHA512("123456"), Code = "admin" });
+                db.Accounts.Add(new Account() { FullName = "Kim Văn Sáng", UserName = "sangkv", PassWord = Commons.StringHelper.stringToSHA512("654321") });
+                db.Accounts.Add(new Account() { FullName = "Nguyễn Thị Thơm", UserName = "thomnt", PassWord = Commons.StringHelper.stringToSHA512("654321") });
+                db.Accounts.Add(new Account() { FullName = "ND01", UserName = "user01", PassWord = Commons.StringHelper.stringToSHA512("654321") });
+                db.Accounts.Add(new Account() { FullName = "ND02", UserName = "user02", PassWord = Commons.StringHelper.stringToSHA512("654321") });
+                db.Accounts.Add(new Account() { FullName = "ND03", UserName = "user03", PassWord = Commons.StringHelper.stringToSHA512("654321") });
+                db.Accounts.Add(new Account() { FullName = "ND04", UserName = "user04", PassWord = Commons.StringHelper.stringToSHA512("654321") });
+                db.Accounts.Add(new Account() { FullName = "ND05", UserName = "user05", PassWord = Commons.StringHelper.stringToSHA512("654321") });
+                db.SaveChanges();
+                var im = new List<Image>();
+                im.Add(new Image() { Name = "1", Uri = "/Uploads/Images/Mau1.jpg", MaTrangThai = 1, AccountId = 1 });
+                im.ForEach(s => db.Images.Add(s));
+
+                db.SaveChanges();
+                db.Khoas.Add(new Khoa() { KeyValue = "abc@2018", Description = "dũng tạo" });
+
+                db.Logs.Add(new Log() { AccountId = 0, Action = "create", EntityName = "Account", NewValue = "Phạm Thu Hà" });
+
+                db.SaveChanges();
+
+                // db.Accounts.Add(new Account() {FullName="Phạm thu hà", Email="hapt@fsivietnam.com.vn",PassWord= StringHelper.stringToSHA512("12356"),UserName="HaPT" });
                 // tạo role
                 List<Role> roles = new List<Role>();
                 roles.Add(new Role() { Code = "QuanTri", Name = "Quản trị" });

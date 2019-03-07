@@ -2,6 +2,7 @@
 @{
     ViewBag.Title = "Table";
     Layout = null;
+    int i = 0;
 }
 
 <div class="row" id="mainContent">
@@ -22,6 +23,7 @@
             <div class="portlet-body">
                 <table class="table table-striped table-hover table-bordered" id="datatable_none_ajax_source">
                     <tr>
+                        <th>STT</th>
                         <th>
                             <span>ref</span>
                         </th>
@@ -46,10 +48,12 @@
 
                     @foreach (var item in Model)
                     {
+                        i ++;
                     <tr data-objectid="@item.Id">
+                        <td>@i</td>
                         <td>
                             <p>kiểu chữ : @Html.DisplayFor(modelItem => item.Image.KieuChu)</p>
-                            <a href="@(item.Image.Uri)" target="_blank">Xem hình gốc</a>
+                            <a href="@Url.Action("Index", "ImageCropedView",new { id = item.Id})" target="_blank">Xem hình gốc</a>
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.Line)

@@ -18,10 +18,12 @@ namespace CropImage.Models.SysTem
         public string Picture { get; set; }
         public DateTime CreateDate { get; set; }
         public bool IsDelete { get; set; }
+        public bool IsOnline { get; set; }
         public Account()
         {
             this.CreateDate = DateTime.Now;
             this.IsDelete = false;
+            this.IsOnline = false;
         }
         public virtual ICollection<Image> ListImg { get; set; }
 

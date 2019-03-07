@@ -69,8 +69,75 @@ namespace CropImage
                       "~/Theme/assets/layouts/layout4/css/custom.min.css",
                       "~/Theme/assets/global/plugins/bootstrap-toastr/toastr.min.css"
                       ));
+            bundles.Add(new StyleBundle("~/DashBoard/css").Include(
+                     "~/Theme/assets/global/plugins/font-awesome/css/font-awesome.min.css",
+                     "~/Theme/assets/global/plugins/simple-line-icons/simple-line-icons.min.css",
+                     "~/Theme/assets/global/plugins/bootstrap/css/bootstrap.min.css",
+                     "~/Theme/assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css",
+                     "~/Theme/assets/global/plugins/bootstrap-daterangepicker/daterangepicker.min.css",
+                     "~/Theme/assets/global/plugins/morris/morris.css",
+                     "~/Theme/assets/global/plugins/fullcalendar/fullcalendar.min.css",
+                     "~/Theme/assets/global/plugins/jqvmap/jqvmap/jqvmap.css",
+                     "~/Theme/assets/global/css/components.min.css",
+                     "~/Theme/assets/global/css/plugins.min.css",
+                     "~/Theme/assets/layouts/layout4/css/layout.min.css",
+                     "~/Theme/assets/layouts/layout4/css/themes/default.min.css",
+                     "~/Theme/assets/layouts/layout4/css/custom.min.css"
+
+                     ));
             // cuttom
             // crop image
+            bundles.Add(new ScriptBundle("~/DashBoard/jquery").Include(
+               "~/Theme/assets/global/plugins/jquery.min.js",
+               "~/Theme/assets/global/plugins/bootstrap/js/bootstrap.min.js",
+               "~/Theme/assets/global/plugins/js.cookie.min.js",
+                 "~/Theme/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js",
+                "~/Theme/assets/global/plugins/jquery.blockui.min.js",
+                "~/Theme/assets/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js",
+
+                  "~/Theme/assets/global/plugins/moment.min.js",
+                "~/Theme/assets/global/plugins/bootstrap-daterangepicker/daterangepicker.min.js",
+                "~/Theme/assets/global/plugins/morris/morris.min.js",
+                "~/Theme/assets/global/plugins/morris/raphael-min.js",
+                "~/Theme/assets/global/plugins/counterup/jquery.waypoints.min.js",
+                "~/Theme/assets/global/plugins/counterup/jquery.counterup.min.js",
+                "~/Theme/assets/global/plugins/amcharts/amcharts/amcharts.js",
+                "~/Theme/assets/global/plugins/amcharts/amcharts/serial.js",
+                "~/Theme/assets/global/plugins/amcharts/amcharts/pie.js",
+                "~/Theme/assets/global/plugins/amcharts/amcharts/radar.js",
+                "~/Theme/assets/global/plugins/amcharts/amcharts/themes/light.js",
+                "~/Theme/assets/global/plugins/amcharts/amcharts/themes/patterns.js",
+                "~/Theme/assets/global/plugins/amcharts/amcharts/themes/chalk.js",
+                "~/Theme/assets/global/plugins/amcharts/ammap/ammap.js",
+                "~/Theme/assets/global/plugins/amcharts/ammap/maps/js/worldLow.js",
+                "~/Theme/assets/global/plugins/amcharts/amstockcharts/amstock.js",
+                "~/Theme/assets/global/plugins/fullcalendar/fullcalendar.min.js",
+                "~/Theme/assets/global/plugins/horizontal-timeline/horizontal-timeline.js",
+                "~/Theme/assets/global/plugins/flot/jquery.flot.min.js",
+                "~/Theme/assets/global/plugins/flot/jquery.flot.resize.min.js",
+                "~/Theme/assets/global/plugins/flot/jquery.flot.categories.min.js",
+                "~/Theme/assets/global/plugins/jquery-easypiechart/jquery.easypiechart.min.js",
+                "~/Theme/assets/global/plugins/jquery.sparkline.min.js",
+                "~/Theme/assets/global/plugins/jqvmap/jqvmap/jquery.vmap.js",
+                "~/Theme/assets/global/plugins/jqvmap/jqvmap/maps/jquery.vmap.russia.js",
+                "~/Theme/assets/global/plugins/jqvmap/jqvmap/maps/jquery.vmap.world.js",
+                "~/Theme/assets/global/plugins/jqvmap/jqvmap/maps/jquery.vmap.europe.js",
+                "~/Theme/assets/global/plugins/jqvmap/jqvmap/maps/jquery.vmap.germany.js",
+                "~/Theme/assets/global/plugins/jqvmap/jqvmap/maps/jquery.vmap.usa.js",
+                "~/Theme/assets/global/plugins/jqvmap/jqvmap/data/jquery.vmap.sampledata.js",
+
+                "~/Theme/assets/global/scripts/app.min.js",
+
+             //   "~/Theme/assets/pages/scripts/dashboard.js",
+               "~/Scripts/Custom/dashboard.js",
+
+                "~/Theme/assets/layouts/layout4/scripts/layout.min.js",
+                "~/Theme/assets/layouts/layout4/scripts/demo.min.js",
+                "~/Theme/assets/layouts/global/scripts/quick-sidebar.min.js",
+        "~/Theme/assets/layouts/global/scripts/quick-nav.min.js"
+               ));
+
+
             bundles.Add(new StyleBundle("~/Crop/css").Include("" +
                 "~/Theme/assets/global/plugins/jcrop/css/jquery.Jcrop.min.css",
                 "~/Themes/assets/global/plugins/fancybox/source/jquery.fancybox.css",
@@ -251,7 +318,7 @@ namespace CropImage
                 "~/Themes/assets/global/plugins/jquery-file-upload/css/jquery.fileupload-ui.css"
 
                 ));
-            
+
         }
     }
 }
