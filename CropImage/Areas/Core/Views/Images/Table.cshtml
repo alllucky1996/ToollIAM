@@ -37,7 +37,7 @@
                         <th>
                             @Html.DisplayNameFor(model => model.TrangThai)
                         </th>
-                        <th></th>
+                        <th>Thao tác</th>
                     </tr>
 
                     @foreach (var item in Model)
@@ -55,7 +55,8 @@
                                 @Html.DisplayFor(modelItem => item.Description)
                             </td>
                             <td>
-                                <img src="@Html.DisplayFor(modelItem => item.Uri)" width="100" />
+                                @*<a href="/ThongKe/ThongKe/ListInRoot/@item.Id" target="_blank"> <img src="@Html.DisplayFor(modelItem => item.Uri)" width="100" /></a>*@
+                                <a href="@Url.Action("Index2", "ImageCropedView",new { id = item.Id})" target="_blank"> <img src="@Html.DisplayFor(modelItem => item.Uri)" width="100" /></a>
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.TrangThai.Name)

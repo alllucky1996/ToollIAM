@@ -534,14 +534,16 @@ namespace CropImage.Areas.Core.Controllers
                     {
                         FileHelper.AppenAllText(path, "\n" + item);
                     }
-                    return Json(new ExecuteResult() { Isok = true, Data = path, Message = "Is ok" }, JsonRequestBehavior.AllowGet);
+                    // return Json(new ExecuteResult() { Isok = true, Data = path, Message = "Is ok" }, JsonRequestBehavior.AllowGet);
+                    return listLable.Count();
 
                 }
                 // return Json(new ExecuteResult() { Isok = false, Data = null, Message = "Key k đúng hoặc k có quyền ghi file" }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
-                return Json(new ExecuteResult() { Isok = false, Data = null, Message = ex.Message }, JsonRequestBehavior.AllowGet);
+                //  return Json(new ExecuteResult() { Isok = false, Data = null, Message = ex.Message }, JsonRequestBehavior.AllowGet);
+                return 0;
             }
         }
         #region ZipFile

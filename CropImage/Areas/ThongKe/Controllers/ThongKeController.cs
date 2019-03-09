@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using CropImage.Controllers;
 using CropImage.Models.ViewModels.ThongKe;
+using Newtonsoft.Json;
 
 namespace CropImage.Areas.ThongKe.Controllers
 {
@@ -27,6 +28,20 @@ namespace CropImage.Areas.ThongKe.Controllers
             ViewBag.tongQuan = tongQuan;
             return View();
         }
-       
+        /// <summary>
+        /// xem tất cả hình con trên ảnh gốc
+        /// </summary>
+        /// <param name="id">id Image</param>
+        /// <returns></returns>
+        public async Task<ActionResult> ListInRoot(long? id)
+        {
+            if (id == null) id = 2; // return Redirect("/Core/Images/Index");
+            var item = await db.Images.FindAsync(id);
+            ViewBag.Positions = JsonConvert.SerializeObject(item.ListCroped);
+            ViewBag.Img = item.Uri;
+            return View();
+        }
+
+
     }
 }

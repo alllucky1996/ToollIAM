@@ -59,16 +59,10 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFramework.SqlServerCompact, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.SqlServerCompact.6.2.0\lib\net45\EntityFramework.SqlServerCompact.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data.SqlServerCe, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.SqlServer.Compact.4.0.8876.1\lib\net40\System.Data.SqlServerCe.dll</HintPath>
-    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
@@ -1744,22 +1738,10 @@
     <Content Include="Theme\assets\global\plugins\amcharts\amstockcharts\plugins\responsive\readme.md" />
     <Content Include="Theme\assets\global\plugins\amcharts\amstockcharts\plugins\responsive\responsive.min.js.map" />
     <Content Include="Areas\Core\Views\ImageCropedView\Index.cshtml" />
-    <None Include="_bin_deployableAssemblies\x86\sqlcese40.dll" />
-    <None Include="_bin_deployableAssemblies\x86\sqlceqp40.dll" />
-    <None Include="_bin_deployableAssemblies\x86\sqlceme40.dll" />
-    <None Include="_bin_deployableAssemblies\x86\sqlceer40EN.dll" />
-    <None Include="_bin_deployableAssemblies\x86\sqlcecompact40.dll" />
-    <None Include="_bin_deployableAssemblies\x86\sqlceca40.dll" />
-    <None Include="_bin_deployableAssemblies\x86\Microsoft.VC90.CRT\README_ENU.txt" />
-    <None Include="_bin_deployableAssemblies\x86\Microsoft.VC90.CRT\msvcr90.dll" />
-    <None Include="_bin_deployableAssemblies\amd64\sqlcese40.dll" />
-    <None Include="_bin_deployableAssemblies\amd64\sqlceqp40.dll" />
-    <None Include="_bin_deployableAssemblies\amd64\sqlceme40.dll" />
-    <None Include="_bin_deployableAssemblies\amd64\sqlceer40EN.dll" />
-    <None Include="_bin_deployableAssemblies\amd64\sqlcecompact40.dll" />
-    <None Include="_bin_deployableAssemblies\amd64\sqlceca40.dll" />
-    <None Include="_bin_deployableAssemblies\amd64\Microsoft.VC90.CRT\README_ENU.txt" />
-    <None Include="_bin_deployableAssemblies\amd64\Microsoft.VC90.CRT\msvcr90.dll" />
+    <Content Include="Areas\ThongKe\Views\ThongKe\ListInRoot.cshtml" />
+    <Content Include="Areas\Core\Views\ImageCropedView\ListInRoot.cshtml" />
+    <Content Include="Areas\Core\Views\Shared\_LayoutList.cshtml" />
+    <Content Include="Areas\Core\Views\ImageCropedView\Index2.cshtml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\Customer.js" />
@@ -3089,7 +3071,6 @@
     <Content Include="Theme\assets\global\plugins\icheck\demo\css\montserrat-regular.svg" />
     <Content Include="Theme\assets\global\plugins\icheck\demo\css\normalize.css" />
     <Content Include="Theme\assets\global\plugins\icheck\demo\index.html" />
-    <Content Include="Theme\assets\global\plugins\icheck\demo\js\custom.js" />
     <Content Include="Theme\assets\global\plugins\icheck\demo\js\custom.min.js" />
     <Content Include="Theme\assets\global\plugins\icheck\demo\js\jquery.js" />
     <Content Include="Theme\assets\global\plugins\icheck\demo\js\zepto.js" />
@@ -4203,7 +4184,6 @@
     <Content Include="Theme\assets\global\plugins\gmaps\README.md" />
     <Content Include="Theme\assets\global\plugins\icheck\bower.json" />
     <Content Include="Theme\assets\global\plugins\icheck\CHANGELOG.md" />
-    <Content Include="Theme\assets\global\plugins\icheck\demo\css\custom.styl" />
     <Content Include="Theme\assets\global\plugins\icheck\demo\css\montserrat-bold.eot" />
     <Content Include="Theme\assets\global\plugins\icheck\demo\css\montserrat-bold.ttf" />
     <Content Include="Theme\assets\global\plugins\icheck\demo\css\montserrat-bold.woff" />
@@ -4327,8 +4307,6 @@
     <Content Include="Views\Login\Index.cshtml" />
     <Content Include="Views\Login\Register.cshtml" />
     <Content Include="Views\Login\Login.cshtml" />
-    <None Include="_bin_deployableAssemblies\amd64\Microsoft.VC90.CRT\Microsoft.VC90.CRT.manifest" />
-    <None Include="_bin_deployableAssemblies\x86\Microsoft.VC90.CRT\Microsoft.VC90.CRT.manifest" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
