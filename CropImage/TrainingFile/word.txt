@@ -1,7 +1,0 @@
-#dũng tạo 11-Feb-19 10:00:05 AM#
-1-00kieu-00-00 ok 255 0 0 89 29 TL nhanh
-1-00kieu-00-00 ok 255 0 0 89 29 TL nhanh
-1-00kieu-00-00 ok 255 0 0 89 29 TL nhanh
-3898f72ecc5240de907362db5732e670-00kieu-01-01 ok 255 10 0 42 28 TL cai
-1-00kieu-00-00 ok 255 0 0 89 29 TL nhanh
-3898f72ecc5240de907362db5732e670-00kieu-01-01 ok 255 10 0 42 28 TL cai
